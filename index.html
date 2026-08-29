@@ -30,33 +30,18 @@
         <div class="hero-copy">
           <p class="eyebrow">Competitive context consumption</p>
           <h1 id="hero-title">
-            YOUR TOKENS.<br />
-            <span>UNREASONABLY</span><br />
-            LOUD.
+            ENTER THE<br />
+            <span>DAILY</span><br />
+            HAUL.
           </h1>
           <p class="hero-deck">
-            Enter the count. Choose your level of delusion. Leave with a flex
-            engineered to silence the group chat.
+            One number. Today's real token count. The board does the rest.
           </p>
-          <a class="text-link" href="#flex-lab">Enter the Flex Lab <span aria-hidden="true">↘</span></a>
         </div>
 
         <div class="hero-visual" aria-hidden="true">
           <div class="broadcast-label">LIVE // CONTEXT ARENA</div>
           <img id="hero-image" src="/assets/token-athlete.png" alt="" />
-          <div class="hero-stat">
-            <span>SATIRICAL FLEX COUNT</span>
-            <strong>125,750,000</strong>
-          </div>
-        </div>
-      </section>
-
-      <section class="ticker" aria-label="Token Flexer highlights">
-        <div>
-          <span>REAL INPUT</span><b>NO FAKE DATA NEEDED</b><i>✦</i>
-          <span>ABSURD OUTPUT</span><b>UP TO 500× ENERGY</b><i>✦</i>
-          <span>HATER DELIVERY</span><b>CONSENT-BASED SMOKE</b><i>✦</i>
-          <span>REAL INPUT</span><b>NO FAKE DATA NEEDED</b>
         </div>
       </section>
 
@@ -107,36 +92,14 @@
               </div>
             </div>
 
-            <fieldset class="mode-field">
-              <legend>Choose your level of delusion</legend>
-              <div class="mode-grid">
-                <label>
-                  <input type="radio" name="mode" value="warmup" />
-                  <span><b>10×</b><small>Warm-up</small></span>
-                </label>
-                <label>
-                  <input type="radio" name="mode" value="unhinged" />
-                  <span><b>50×</b><small>Unhinged</small></span>
-                </label>
-                <label>
-                  <input type="radio" name="mode" value="tokenmax" checked />
-                  <span><b>100×</b><small>Tokenmax</small></span>
-                </label>
-                <label>
-                  <input type="radio" name="mode" value="final-form" />
-                  <span><b>500×</b><small>Final form</small></span>
-                </label>
-              </div>
-            </fieldset>
-
             <button class="primary-button" type="submit">
-              <span>FLEX MY TOKENS</span>
+              <span>ENTER THE DAILY HAUL</span>
               <i aria-hidden="true">↗</i>
             </button>
             <p class="satire-note">Results are parody and visibly labeled. Actual count remains on the record.</p>
           </form>
 
-          <article class="result-panel" id="result-panel" aria-live="polite">
+          <article class="result-panel" id="result-panel" aria-live="polite" hidden>
             <div class="result-topline">
               <span>FLEX REACTOR // ARMED</span>
               <span class="live-dot">READY</span>
@@ -167,7 +130,7 @@
         </div>
       </section>
 
-      <section class="scoreboard shell" id="scoreboard" aria-labelledby="score-title">
+      <section class="scoreboard shell" id="scoreboard" aria-labelledby="score-title" hidden>
         <div class="section-heading inverse">
           <div>
             <p class="eyebrow">02 // The anonymous scoreboard</p>
@@ -197,7 +160,72 @@
         <p class="board-disclosure" id="board-disclosure"></p>
       </section>
 
-      <section class="protocol shell" id="protocol" aria-labelledby="protocol-title">
+      <section class="analysis shell" id="analysis" aria-labelledby="analysis-title" hidden>
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">03 // Performance analysis</p>
+            <h2 id="analysis-title">THE NUMBERS AGREE</h2>
+          </div>
+          <p>Independent review of today&rsquo;s haul. The findings were consistent.</p>
+        </div>
+
+        <div class="stat-row" id="stat-row"></div>
+
+        <div class="chart-grid">
+          <figure class="chart-card">
+            <figcaption>
+              <h3>Today&rsquo;s haul, ranked</h3>
+              <p>Every bar is one person&rsquo;s real count. Yours is the short one, in coral.</p>
+            </figcaption>
+            <div class="chart-holder" id="chart-haul"></div>
+          </figure>
+
+          <figure class="chart-card">
+            <figcaption>
+              <h3>Finishing position, last 14 days</h3>
+              <p>Consistency is a quality. This is a chart of that quality.</p>
+            </figcaption>
+            <div class="chart-holder" id="chart-position"></div>
+          </figure>
+        </div>
+
+        <div class="evidence">
+          <h3>Supporting evidence</h3>
+          <p>Exhibits retained for the record.</p>
+          <div class="evidence-grid" id="evidence-grid"></div>
+        </div>
+
+        <div class="course-block">
+          <h3>Suggested coursework</h3>
+          <p id="course-note">Selected for you, based on your performance.</p>
+          <ul class="course-list" id="course-list"></ul>
+        </div>
+      </section>
+
+      <section class="support shell" id="support" aria-labelledby="support-title" hidden>
+        <div class="section-heading inverse">
+          <div>
+            <p class="eyebrow">04 // Aftercare</p>
+            <h2 id="support-title">DO YOU NEED A MINUTE?</h2>
+          </div>
+          <p>Support is available. Two options.</p>
+        </div>
+        <div class="support-choice">
+          <button type="button" class="support-button" id="talk-json">
+            <span class="support-k">Option A</span>
+            <b>Talk to JSON</b>
+            <small>Available now. Extremely structured listener.</small>
+          </button>
+          <button type="button" class="support-button" id="talk-claude">
+            <span class="support-k">Option B</span>
+            <b>Speak to Claude</b>
+            <small>Can actually help with the underlying problem.</small>
+          </button>
+        </div>
+        <div class="support-answer" id="support-answer" role="status" aria-live="polite"></div>
+      </section>
+
+      <section class="protocol shell" id="protocol" aria-labelledby="protocol-title" hidden>
         <div class="section-heading">
           <div>
             <p class="eyebrow">03 // The protocol</p>

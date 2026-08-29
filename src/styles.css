@@ -489,3 +489,261 @@ footer { display: flex; align-items: center; justify-content: space-between; gap
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* ── Performance analysis ─────────────────────────────────────────────
+   Page two: the charts, the exhibits, and the coursework. Rivals render in
+   lime and the entrant in coral; every bar is direct-labelled with a name so
+   identity never rests on colour alone. */
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
+  background: var(--line-dark);
+  border: 1px solid var(--line-dark);
+  margin-bottom: 2rem;
+}
+
+.stat-cell {
+  background: var(--ink);
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stat-cell span {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.stat-cell strong {
+  font-family: "Arial Black", "Helvetica Neue", sans-serif;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--coral);
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-cell small {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.chart-card {
+  margin: 0;
+  border: 1px solid var(--line-dark);
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.chart-card figcaption h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+}
+
+.chart-card figcaption p {
+  margin: 0.3rem 0 1rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.chart-holder {
+  overflow-x: auto;
+  color: var(--white);
+}
+
+.chart-holder svg {
+  display: block;
+  min-width: 300px;
+}
+
+.chart-holder text {
+  font-family: "Inter", system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+.evidence,
+.course-block {
+  margin-top: 2.5rem;
+}
+
+.evidence h3,
+.course-block h3 {
+  font-size: 1.1rem;
+  margin: 0 0 0.25rem;
+}
+
+.evidence > p,
+.course-block > p {
+  margin: 0 0 1.1rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1rem;
+}
+
+.evidence-grid figure {
+  margin: 0;
+  border: 1px solid var(--line-dark);
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.evidence-grid img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.evidence-grid figcaption {
+  padding: 0.7rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.evidence-grid figcaption b {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--lime);
+}
+
+.evidence-grid figcaption span {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.course-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.course-list li {
+  border-left: 2px solid var(--lime);
+  padding-left: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.course-list a {
+  font-family: "Arial Black", "Helvetica Neue", sans-serif;
+  font-size: 1.05rem;
+  color: var(--white);
+  text-decoration: none;
+  letter-spacing: 0.01em;
+}
+
+.course-list a:hover,
+.course-list a:focus-visible {
+  color: var(--lime);
+}
+
+.course-list small {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+/* ── Aftercare ────────────────────────────────────────────────────── */
+
+.support-choice {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.support-button {
+  text-align: left;
+  border: 1px solid var(--line-light);
+  background: transparent;
+  color: inherit;
+  padding: 1.15rem 1.25rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  transition: border-color 0.14s ease, background 0.14s ease;
+  min-height: 52px;
+}
+
+.support-button:hover,
+.support-button:focus-visible {
+  border-color: currentColor;
+  background: rgba(9, 10, 9, 0.05);
+}
+
+.support-k {
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.support-button b {
+  font-family: "Arial Black", "Helvetica Neue", sans-serif;
+  font-size: 1.3rem;
+  line-height: 1.1;
+}
+
+.support-button small {
+  font-size: 0.8rem;
+  opacity: 0.7;
+  line-height: 1.45;
+}
+
+.support-answer:empty {
+  display: none;
+}
+
+.support-answer {
+  margin-top: 1.25rem;
+  padding: 1rem 1.15rem;
+  border-left: 3px solid currentColor;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.support-answer p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  max-width: 62ch;
+}
+
+.support-answer a {
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 700px) {
+  .stat-cell strong {
+    font-size: 1.6rem;
+  }
+}
