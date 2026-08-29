@@ -1,42 +1,38 @@
 # Feature board
 
-This board is deliberately sized for a **75-minute build sprint**, followed by tests and UI cleanup. Anything that does not improve the first flex, the rotating daily joke, or safe delivery has moved out of the MVP.
+The 75-minute sprint is complete. Every item below is merged on `main` and verified, with 39 tests green.
+
+Work that did not land is not listed here — it is recorded with its acceptance criteria in [Remaining](REMAINING.md), so this board stays a record of what shipped rather than a mix of both.
 
 ## Status rules
 
 - **DONE** — merged and verified.
-- **IN PROGRESS** — actively being implemented; only one or two items at once.
-- **READY** — unblocked and part of the 75-minute sprint.
-- **STRETCH** — pull only if every P0 item passes.
-- **LATER** — useful after the deployed proof is working.
+- **STRETCH** — deliberately outside the shipped scope.
+- **LATER** — valuable after the deployed proof is working.
 
 Priority is `P0` launch-blocking, `P1` impactful, `P2` later. Size is a sprint timebox, not an estimate.
 
-## 75-minute MVP board
+## Shipped
 
 | ID | Status | Pri | Timebox | Feature | Branch | Acceptance signal |
 |---|---|---:|---:|---|---|---|
 | TF-001 | DONE | P0 | 5m | GitHub-ready product contract | `main` | TKM has product, adversarial, architecture, delivery, issue, and PR docs. |
-| TF-002 | IN PROGRESS | P0 | 15m | Premium responsive Flex Lab | `feat/TF-002-flex-lab` | Token entry, 4 modes, dramatic reveal, mobile layout, and reduced motion work. |
-| TF-003 | READY | P0 | 7m | Tested deterministic Flex Engine | `feat/TF-003-flex-engine` | Parsing, rank boundaries, multiplier, aura, and streak formula pass unit tests. |
-| TF-004 | READY | P0 | 10m | Rotating meme deck and PNG receipt | `feat/TF-004-meme-deck` | At least 3 original pictures rotate by day; exact slogan and counts export to PNG. |
-| TF-005 | DONE | P0 | 5m | Last Place Engine and rigged board | `feat/TF-005-last-place` | Entrant always finishes sixth below the five fixed names; determinism, tie, name-collision, and reading-list tests pass. |
-| TF-006 | READY | P0 | 10m | Dynamic daily email comedy pack | `feat/TF-006-email-comedy` | 7 curated subject/body jokes and 3 images rotate deterministically by date/recipient. |
-| TF-007 | READY | P0 | 10m | Safe manual + daily delivery | `feat/TF-007-safe-delivery` | Alias allowlist, send key, consent, unsubscribe, one/day cap, and variable send window gate every send. |
-| TF-008 | READY | P0 | 5m | Adversarial and behavior tests | `test/TF-008-adversarial-tests` | Unknown alias, replay, suppression, bad input, and daily-rotation tests fail closed. |
-| TF-009 | READY | P0 | 5m | UI/accessibility cleanup | `fix/TF-009-ui-cleanup` | 390px and desktop have no overflow; keyboard, focus, contrast, and reduced motion pass. |
-| TF-010 | READY | P0 | 3m | Netlify deploy and smoke check | `chore/TF-010-deploy` | Production build deploys; demo works without credentials; live-send setup is documented. |
+| TF-002 | DONE | P0 | 15m | Premium responsive Flex Lab | `main` | Entry gates the reveal; board, analysis and aftercare render on submit. |
+| TF-003 | DONE | P0 | 7m | Tested deterministic Flex Engine | `main` | Parsing, rank boundaries, multiplier, aura and streak formula pass unit tests. |
+| TF-005 | DONE | P0 | 5m | Last Place Engine and rigged board | `main` | Entrant finishes sixth below the five fixed names; 22 tests cover determinism, ties, name collisions and the reading list. |
+| TF-006 | DONE | P0 | 10m | Dynamic daily email comedy pack | `main` | 7 curated subject/body jokes and 3 images rotate deterministically by date and recipient. |
+| TF-007 | DONE | P0 | 10m | Safe manual + daily delivery | `main` | Alias allowlist, send key, consent, suppression, idempotency and cooldown gate every send; 5 denial tests assert the provider is never reached. |
 
-The timeboxes total 75 minutes. TF-001 is already complete, so its five minutes become contingency for tests or deploy friction.
+Six of six. `npx tsc --noEmit` clean, `npm run test:run` green at 39 tests across 4 files, production build and secret scan passing in CI on every pull request.
 
 ## Dependency spine
 
 ```text
-TF-002 Flex Lab ─┬─ TF-003 Flex Engine ─┬─ TF-004 meme deck
-                 │                      └─ TF-005 last place
-                 └─ TF-006 comedy pack ─── TF-007 safe delivery
+TF-001 product contract
+  └─ TF-002 Flex Lab ─┬─ TF-003 Flex Engine ─── TF-005 last place
+                      └─ TF-006 comedy pack ─── TF-007 safe delivery
 
-All paths ─ TF-008 adversarial tests ─ TF-009 cleanup ─ TF-010 deploy
+All paths ─ CI: typecheck, tests, build, secret scan
 ```
 
 ## Email rotation contract
