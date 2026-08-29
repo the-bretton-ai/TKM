@@ -1,4 +1,4 @@
-import { calculateFlex, parseTokenCount, rankFor } from "./flex-engine";
+import { MAX_ACTUAL_TOKENS, calculateFlex, parseTokenCount, rankFor } from "./flex-engine";
 
 describe("parseTokenCount", () => {
   it("accepts formatted positive integers", () => {
@@ -39,5 +39,26 @@ describe("calculateFlex", () => {
 
   it("rejects invalid counts", () => {
     expect(() => calculateFlex(0, "tokenmax")).toThrow(RangeError);
+  });
+});
+
+describe("MAX_ACTUAL_TOKENS", () => {
+  it("is accepted by the parser and survives the largest multiplier", () => {
+    expect(parseTokenCount(String(MAX_ACTUAL_TOKENS))).toBe(MAX_ACTUAL_TOKENS);
+    const result = calculateFlex(MAX_ACTUAL_TOKENS, "final-form", 365);
+    expect(Number.isSafeInteger(result.flexCount)).toBe(true);
+  });
+
+  it("rejects anything above it rather than throwing later", () => {
+    expect(parseTokenCount(String(MAX_ACTUAL_TOKENS + 1))).toBeNull();
+  });
+
+  it("never throws for any parseable input at any mode", () => {
+    const modes = ["warmup", "unhinged", "tokenmax", "final-form"] as const;
+    for (const mode of modes) {
+      for (const tokens of [1, 999, 1_000_000, 1_000_000_000, MAX_ACTUAL_TOKENS]) {
+        expect(() => calculateFlex(tokens, mode, 365)).not.toThrow();
+      }
+    }
   });
 });

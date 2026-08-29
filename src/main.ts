@@ -432,7 +432,7 @@ form.addEventListener("submit", (event) => {
   const actualTokens = parseTokenCount(tokenInput.value);
   if (!actualTokens) {
     tokenInput.setAttribute("aria-invalid", "true");
-    tokenError.textContent = "Enter a whole number from 1 to 999 trillion.";
+    tokenError.textContent = "Enter a whole number from 1 to 18 trillion.";
     tokenInput.focus();
     return;
   }

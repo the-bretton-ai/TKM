@@ -18,7 +18,14 @@ export type FlexResult = {
   streakBonus: number;
 };
 
-export const MAX_ACTUAL_TOKENS = 999_999_999_999_999;
+/**
+ * The largest input whose Flex Count still fits in a safe integer at the
+ * biggest multiplier. Final form is 500x, so the ceiling is roughly
+ * MAX_SAFE_INTEGER / 500 once the aura and a full 365-day streak bonus are
+ * allowed for. The previous value (999 trillion) was ~55x too high: it let
+ * parseTokenCount accept counts that calculateFlex then threw on.
+ */
+export const MAX_ACTUAL_TOKENS = 18_000_000_000_000;
 
 export function parseTokenCount(input: string): number | null {
   const normalized = input.replace(/[,_\s]/g, "").trim();
