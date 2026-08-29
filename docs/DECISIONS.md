@@ -14,6 +14,9 @@ Decisions stay here so the product does not quietly re-litigate its foundations 
 | ADR-008 | 2026-08-29 | Accepted | Keep demo mode fully functional without credentials. | Allows immediate deployment and review before email/domain setup. |
 | ADR-009 | 2026-08-29 | Accepted | Use trunk-based branches and deploy previews. | Keeps `main` releasable and avoids an unnecessary long-lived integration branch. |
 | ADR-010 | 2026-08-29 | Proposed | Use Resend as the first transactional email provider. | Small HTTP API and straightforward templates; confirm when the owner chooses a sending domain. |
+| ADR-011 | 2026-08-29 | Accepted | Cap the first implementation sprint at 75 minutes. | Forces the product to prove the reveal, rotating joke, safe send, tests, and deploy before infrastructure expansion. |
+| ADR-012 | 2026-08-29 | Accepted | Rotate curated email variants deterministically rather than generate copy at send time. | Daily freshness stays funny, bounded, testable, fast, and resistant to hostile output. |
+| ADR-013 | 2026-08-29 | Accepted | Cut the shared server scoreboard from the timed MVP. | Local persistence supplies enough product value; email safety matters more than public score writes. |
 
 ## Open decisions
 

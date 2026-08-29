@@ -2,6 +2,8 @@
 
 The app is a joke delivery system with email capability. That combination deserves a threat model before it deserves a send button.
 
+The timeboxed implementation review and dynamic-daily-email findings live in [ADVERSARIAL-REVIEW-75.md](ADVERSARIAL-REVIEW-75.md). Its P0 gate overrides schedule pressure.
+
 ## Abuse cases and controls
 
 | Threat | What could go wrong | Launch control | Verification |

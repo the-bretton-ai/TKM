@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Flexer Build Board</title>
+<meta name="description" content="Ten claimable chunks of Token Flexer work, the ID hazards between the two feature boards, and the Flex-Off.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* ── Dark-first palette. PRODUCT.md specifies the visual system: near-black,
+   electric chartreuse, hot coral, icy white. Neutrals carry a green bias. ── */
+:root{
+  --ground:#0B0E08; --panel:#141A0F; --panel-2:#1B2314; --line:#2B3620; --line-hi:#3D4C2C;
+  --ink:#EDF3E4; --muted:#8B9A79; --faint:#5F6B51;
+  --volt:#C9F53F; --volt-ink:#0B0E08; --volt-dim:#8FB02C;
+  --coral:#FF5A3C; --coral-ink:#0B0E08; --coral-dim:#C2412A;
+  --amber:#FFC53D; --amber-ink:#0B0E08;
+  --sky:#6FD3E8;
+  --grain:.035; --shadow:0 1px 0 rgba(201,245,63,.06), 0 12px 28px rgba(0,0,0,.5);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:light){
+  :root:not([data-theme="dark"]){
+    --ground:#F2F5EA; --panel:#FFFFFF; --panel-2:#F7FAEE; --line:#D9E1C7; --line-hi:#C3CFAB;
+    --ink:#11160C; --muted:#5C6B49; --faint:#8B9A79;
+    --volt:#4F6D06; --volt-ink:#FFFFFF; --volt-dim:#6E8F17;
+    --coral:#C0341B; --coral-ink:#FFFFFF; --coral-dim:#94290F;
+    --amber:#8A5D00; --amber-ink:#FFFFFF;
+    --sky:#1D6B7E;
+    --grain:.02; --shadow:0 1px 0 rgba(0,0,0,.03), 0 10px 24px rgba(30,45,10,.10);
+    color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --ground:#F2F5EA; --panel:#FFFFFF; --panel-2:#F7FAEE; --line:#D9E1C7; --line-hi:#C3CFAB;
+  --ink:#11160C; --muted:#5C6B49; --faint:#8B9A79;
+  --volt:#4F6D06; --volt-ink:#FFFFFF; --volt-dim:#6E8F17;
+  --coral:#C0341B; --coral-ink:#FFFFFF; --coral-dim:#94290F;
+  --amber:#8A5D00; --amber-ink:#FFFFFF;
+  --sky:#1D6B7E;
+  --grain:.02; --shadow:0 1px 0 rgba(0,0,0,.03), 0 10px 24px rgba(30,45,10,.10);
+  color-scheme:light;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font:400 15px/1.55 "Public Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  overflow-x:hidden;
+}
+/* arena grain */
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:var(--grain);
+  background-image:radial-gradient(currentColor .5px, transparent .5px);
+  background-size:3px 3px;
+}
+.wrap{position:relative; z-index:1; max-width:1220px; margin:0 auto; padding:0 20px 96px}
+
+h1,h2,h3,.disp{
+  font-family:"Big Shoulders Display", "Public Sans", Impact, sans-serif;
+  font-weight:800; letter-spacing:.005em; text-wrap:balance; margin:0;
+}
+.mono{font-family:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace}
+.num{font-variant-numeric:tabular-nums}
+.eyebrow{
+  font-family:"IBM Plex Mono", monospace; font-size:11px; font-weight:600;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
+}
+a{color:var(--volt)}
+:focus-visible{outline:2px solid var(--volt); outline-offset:2px; border-radius:1px}
+
+/* ── Masthead ───────────────────────────────────────────── */
+.mast{
+  display:flex; flex-wrap:wrap; gap:20px; align-items:flex-end; justify-content:space-between;
+  padding:40px 0 22px; border-bottom:2px solid var(--line);
+}
+.mast h1{font-size:clamp(40px,7vw,76px); line-height:.86; text-transform:uppercase}
+.mast h1 em{font-style:normal; color:var(--volt); display:block}
+.mast .sub{max-width:58ch; color:var(--muted); margin-top:12px; font-size:15px}
+.mast-actions{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+
+.btn{
+  font-family:"IBM Plex Mono", monospace; font-size:12px; font-weight:600; letter-spacing:.06em;
+  text-transform:uppercase; padding:9px 13px; border:1px solid var(--line-hi); background:var(--panel);
+  color:var(--ink); cursor:pointer; border-radius:0; transition:background .12s, border-color .12s, color .12s;
+}
+.btn:hover{border-color:var(--volt); color:var(--volt)}
+.btn-solid{background:var(--volt); color:var(--volt-ink); border-color:var(--volt)}
+.btn-solid:hover{background:var(--volt-dim); border-color:var(--volt-dim); color:var(--volt-ink)}
+
+/* ── LED stat strip ─────────────────────────────────────── */
+.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(124px,1fr)); gap:2px; margin:22px 0 0;
+  background:var(--line); border:1px solid var(--line)}
+.stat{background:var(--panel); padding:14px 16px; display:flex; flex-direction:column; gap:2px}
+.stat b{font-family:"Big Shoulders Display",sans-serif; font-size:38px; line-height:.9; font-variant-numeric:tabular-nums}
+.stat span{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
+.stat[data-k="done"] b{color:var(--volt)} .stat[data-k="building"] b{color:var(--amber)}
+.stat[data-k="blocked"] b{color:var(--coral)} .stat[data-k="ready"] b{color:var(--ink)}
+
+/* ── Hazard banner ──────────────────────────────────────── */
+.hazard{
+  margin:28px 0 0; border:1px solid var(--coral); background:var(--panel);
+  border-left:5px solid var(--coral); padding:16px 18px;
+}
+.hazard h2{font-size:22px; text-transform:uppercase; color:var(--coral); letter-spacing:.02em}
+.hazard p{margin:6px 0 0; color:var(--muted); max-width:76ch; font-size:14px}
+.hazard details{margin-top:12px}
+.hazard summary{cursor:pointer; font-family:"IBM Plex Mono",monospace; font-size:12px;
+  letter-spacing:.06em; text-transform:uppercase; color:var(--ink)}
+.hazard summary:hover{color:var(--coral)}
+.coltab{width:100%; border-collapse:collapse; margin-top:12px; font-size:13px}
+.coltab th,.coltab td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line); vertical-align:top}
+.coltab th{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--muted); font-weight:600}
+.coltab td:first-child{font-family:"IBM Plex Mono",monospace; color:var(--coral); font-weight:600; white-space:nowrap}
+.scroll-x{overflow-x:auto}
+
+/* ── Section headers ────────────────────────────────────── */
+.sec{margin-top:56px}
+.sec-head{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; padding-bottom:12px;
+  border-bottom:2px solid var(--line); margin-bottom:22px}
+.sec-head h2{font-size:clamp(26px,4vw,38px); text-transform:uppercase; line-height:1}
+.sec-head p{margin:0; color:var(--muted); font-size:14px; flex:1 1 280px}
+
+/* ── Filter rail ────────────────────────────────────────── */
+.rail{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:20px; align-items:center}
+.chip{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:500; letter-spacing:.08em;
+  text-transform:uppercase; padding:6px 11px; border:1px solid var(--line-hi);
+  background:transparent; color:var(--muted); cursor:pointer;
+}
+.chip[aria-pressed="true"]{background:var(--ink); color:var(--ground); border-color:var(--ink)}
+.chip:hover{border-color:var(--volt); color:var(--volt)}
+.chip[aria-pressed="true"]:hover{color:var(--ground)}
+.rail-sp{flex:1}
+
+/* ── Tiles ──────────────────────────────────────────────── */
+.board{display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px}
+.tile{
+  background:var(--panel); border:1px solid var(--line); box-shadow:var(--shadow);
+  display:flex; flex-direction:column; position:relative; transition:transform .14s, border-color .14s;
+}
+.tile:hover{border-color:var(--line-hi); transform:translateY(-2px)}
+.tile[data-status="done"]{border-left:5px solid var(--volt)}
+.tile[data-status="building"]{border-left:5px solid var(--amber)}
+.tile[data-status="blocked"]{border-left:5px solid var(--coral)}
+.tile[data-status="ready"]{border-left:5px solid var(--line-hi)}
+.tile[data-status="later"]{border-left:5px solid var(--faint); opacity:.72}
+.tile.hide{display:none}
+
+.t-top{display:flex; align-items:flex-start; gap:12px; padding:14px 16px 0}
+.t-n{font-family:"Big Shoulders Display",sans-serif; font-size:44px; line-height:.8; font-weight:900;
+  color:var(--line-hi); font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+.tile[data-status="done"] .t-n{color:var(--volt)}
+.t-meta{margin-left:auto; display:flex; flex-direction:column; align-items:flex-end; gap:5px}
+.pill{font-family:"IBM Plex Mono",monospace; font-size:9.5px; font-weight:600; letter-spacing:.12em;
+  text-transform:uppercase; padding:3px 7px; border:1px solid currentColor; white-space:nowrap}
+.pill.s-done{color:var(--volt)} .pill.s-building{color:var(--amber)}
+.pill.s-blocked{color:var(--coral)} .pill.s-ready{color:var(--muted)} .pill.s-later{color:var(--faint)}
+.pri{font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.1em; color:var(--faint)}
+
+.t-lane{padding:2px 16px 0; font-family:"IBM Plex Mono",monospace; font-size:10px;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--volt-dim)}
+.t-title{padding:6px 16px 0; font-size:24px; line-height:1.05; text-transform:uppercase}
+.t-out{padding:8px 16px 0; color:var(--muted); font-size:14px; line-height:1.5}
+
+.t-flags{padding:12px 16px 0; display:flex; flex-direction:column; gap:6px}
+.flag{display:flex; gap:8px; align-items:flex-start; font-family:"IBM Plex Mono",monospace;
+  font-size:11px; line-height:1.45; padding:6px 8px; border:1px dashed var(--coral-dim); color:var(--coral)}
+.flag.warn{border-color:var(--amber); color:var(--amber)}
+.flag b{font-weight:600}
+
+.t-facts{padding:12px 16px 0; display:flex; flex-direction:column; gap:5px;
+  font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--muted); line-height:1.5}
+.t-facts .k{color:var(--faint); display:inline-block; min-width:74px}
+.t-acc{margin:12px 16px 0; padding:10px 12px; background:var(--panel-2); border-left:2px solid var(--volt-dim);
+  font-size:12.5px; color:var(--ink); line-height:1.5}
+.t-acc .k{font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--volt-dim); display:block; margin-bottom:3px}
+
+.t-foot{margin-top:auto; padding:14px 16px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  border-top:1px solid var(--line)}
+.owner{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--faint); margin-right:auto}
+.owner b{color:var(--volt); font-weight:600}
+select.mini,button.mini{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.05em; text-transform:uppercase;
+  padding:6px 8px; border:1px solid var(--line-hi); background:var(--panel-2); color:var(--ink); cursor:pointer;
+}
+select.mini:hover,button.mini:hover{border-color:var(--volt)}
+
+/* ── Waves ──────────────────────────────────────────────── */
+.waves{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:2px;
+  background:var(--line); border:1px solid var(--line)}
+.wave{background:var(--panel); padding:18px 18px 20px; display:flex; flex-direction:column; gap:8px}
+.wave h3{font-size:22px; text-transform:uppercase; line-height:1}
+.wave .goal{color:var(--muted); font-size:13.5px; line-height:1.5}
+.wave .ids{display:flex; gap:4px; flex-wrap:wrap; margin-top:2px}
+.wave .ids span{font-family:"IBM Plex Mono",monospace; font-size:10px; padding:3px 6px;
+  border:1px solid var(--line-hi); color:var(--muted)}
+.wave .gate{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--volt-dim); line-height:1.45;
+  border-top:1px dashed var(--line-hi); padding-top:8px; margin-top:auto}
+
+/* ── Flex-Off ───────────────────────────────────────────── */
+.flexoff{border:2px solid var(--volt); background:var(--panel); position:relative}
+.flexoff-head{padding:20px 22px 0; display:flex; flex-wrap:wrap; gap:14px; align-items:baseline}
+.flexoff-head h2{font-size:clamp(30px,5vw,46px); text-transform:uppercase; line-height:.9; color:var(--volt)}
+.flexoff-head p{margin:0; color:var(--muted); font-size:13.5px; flex:1 1 240px}
+.fo-form{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; padding:18px 22px}
+.field{display:flex; flex-direction:column; gap:5px}
+.field label{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--muted)}
+.field input,.field select{
+  font-family:"IBM Plex Mono",monospace; font-size:15px; padding:10px 12px; background:var(--panel-2);
+  border:1px solid var(--line-hi); color:var(--ink); font-variant-numeric:tabular-nums;
+}
+.field input{width:190px}
+.field input:focus,.field select:focus{border-color:var(--volt)}
+
+.lb{width:100%; border-collapse:collapse; margin-top:4px}
+.lb th{font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted); text-align:left; padding:8px 14px; border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line); font-weight:600}
+.lb th.r,.lb td.r{text-align:right}
+.lb td{padding:12px 14px; border-bottom:1px solid var(--line); font-size:15px}
+.lb .rk{font-family:"Big Shoulders Display",sans-serif; font-size:30px; font-weight:900; line-height:.9;
+  color:var(--faint); width:52px; font-variant-numeric:tabular-nums}
+.lb .who{font-family:"Big Shoulders Display",sans-serif; font-size:26px; font-weight:700;
+  text-transform:uppercase; line-height:1}
+.lb .title{display:block; font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--muted); margin-top:2px}
+.lb .score{font-family:"IBM Plex Mono",monospace; font-weight:600; font-variant-numeric:tabular-nums; font-size:15px}
+.lb .raw{display:block; font-size:10px; color:var(--faint); margin-top:2px}
+.lb tr.you{background:var(--panel-2)}
+.lb tr.you .rk{color:var(--coral)}
+.lb tr.you .who{color:var(--coral)}
+.lb tr.you td{border-bottom-color:var(--coral-dim)}
+.verdict{padding:16px 22px 20px; border-top:1px solid var(--line); display:flex; gap:14px;
+  align-items:flex-start; flex-wrap:wrap}
+.verdict .burn{font-family:"Big Shoulders Display",sans-serif; font-size:clamp(22px,3.4vw,32px);
+  font-weight:800; text-transform:uppercase; color:var(--coral); line-height:1; flex:1 1 300px}
+.verdict .fine{font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--faint);
+  line-height:1.5; flex:1 1 240px}
+
+/* ── Remedial reading ───────────────────────────────────── */
+.reading{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:2px;
+  background:var(--line); border:1px solid var(--line)}
+.read{
+  background:var(--panel); padding:20px 18px; display:flex; flex-direction:column; gap:7px;
+  text-decoration:none; color:inherit; transition:background .14s;
+}
+.read:hover,.read:focus-visible{background:var(--panel-2)}
+.read .idx{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.14em; color:var(--faint)}
+.read h3{font-family:"Big Shoulders Display",sans-serif; font-size:27px; font-weight:800;
+  text-transform:uppercase; line-height:.98; color:var(--ink); transition:color .14s}
+.read:hover h3,.read:focus-visible h3{color:var(--volt)}
+.read .blurb{color:var(--muted); font-size:13.5px; line-height:1.5}
+.read .dest{margin-top:auto; padding-top:10px; font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+  letter-spacing:.06em; color:var(--volt-dim); border-top:1px dashed var(--line-hi)}
+.read .dest::after{content:" ↗"}
+.read .for{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--coral)}
+
+/* ── Gates & decisions ──────────────────────────────────── */
+.cols{display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:16px}
+.card{background:var(--panel); border:1px solid var(--line); padding:20px}
+.card h3{font-size:22px; text-transform:uppercase; margin-bottom:4px}
+.card > p.lede{color:var(--muted); font-size:13.5px; margin:0 0 14px}
+.gate-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px}
+.gate-list li{border-left:2px solid var(--coral); padding-left:12px}
+.gate-list .rule{font-weight:600; font-size:14px; line-height:1.4}
+.gate-list .why{color:var(--muted); font-size:12.5px; line-height:1.45; margin-top:3px}
+.gate-list .who{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--volt-dim); margin-top:4px; display:block}
+.dec-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:14px}
+.dec-list li{border-left:2px solid var(--amber); padding-left:12px}
+.dec-list .q{font-weight:600; font-size:14px; line-height:1.4}
+.dec-list .d{color:var(--muted); font-size:12.5px; line-height:1.45; margin-top:4px}
+.dec-list .blocks{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--coral); margin-top:5px; display:block}
+
+/* ── Contracts ──────────────────────────────────────────── */
+.contract{border-top:1px solid var(--line); padding-top:12px; margin-top:12px}
+.contract:first-of-type{border-top:0; padding-top:0; margin-top:0}
+.contract .cname{font-family:"Big Shoulders Display",sans-serif; font-size:19px; font-weight:700;
+  text-transform:uppercase}
+.contract .btw{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--sky)}
+.contract .cbody{color:var(--muted); font-size:13px; line-height:1.5; margin-top:5px}
+
+footer{margin-top:64px; padding-top:20px; border-top:2px solid var(--line); color:var(--faint);
+  font-family:"IBM Plex Mono",monospace; font-size:11px; line-height:1.7}
+footer b{color:var(--muted); font-weight:600}
+
+.toast{position:fixed; left:50%; bottom:26px; transform:translateX(-50%) translateY(120%);
+  background:var(--volt); color:var(--volt-ink); padding:11px 18px; font-family:"IBM Plex Mono",monospace;
+  font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; z-index:50;
+  transition:transform .22s cubic-bezier(.2,.8,.3,1); box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.toast.on{transform:translateX(-50%) translateY(0)}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important; transition-duration:.001ms !important}
+  .tile:hover{transform:none}
+}
+@media (max-width:640px){
+  .mast{padding-top:28px}
+  .board{grid-template-columns:1fr}
+  .field input{width:100%}
+  .fo-form{flex-direction:column; align-items:stretch}
+  .lb td,.lb th{padding-left:10px; padding-right:10px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="mast">
+    <div>
+      <div class="eyebrow" id="stamp">Token Flexer · TKM</div>
+      <h1>Build<em>Board</em></h1>
+      <p class="sub" id="headline"></p>
+    </div>
+    <div class="mast-actions">
+      <button class="btn" id="share">Copy board link</button>
+      <button class="btn" id="export">Copy commit block</button>
+      <button class="btn" id="reset" title="Clear local claims">Reset</button>
+      <button class="btn" id="theme" aria-label="Toggle colour theme">◐</button>
+    </div>
+  </header>
+
+  <div class="stats" id="stats"></div>
+
+  <section class="hazard" aria-labelledby="haz-h">
+    <h2 id="haz-h">⚠ ID Hazard — do not use bare TF numbers</h2>
+    <p id="haz-p"></p>
+    <details>
+      <summary>Show all colliding ids</summary>
+      <div class="scroll-x">
+        <table class="coltab">
+          <thead><tr><th>Id</th><th>Means this on the committed launch board</th><th>…and this on the sprint board</th></tr></thead>
+          <tbody id="haz-body"></tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <section class="sec" aria-labelledby="board-h">
+    <div class="sec-head">
+      <h2 id="board-h">Ten Chunks</h2>
+      <p>Claim one. Each tile is sized for one person to finish. Tiles flag where they share source ids or files with another tile, so two people don't land in the same place.</p>
+    </div>
+    <div class="rail" id="rail" role="group" aria-label="Filter tiles"></div>
+    <div class="board" id="board"></div>
+  </section>
+
+  <section class="sec" aria-labelledby="wave-h">
+    <div class="sec-head">
+      <h2 id="wave-h">Waves</h2>
+      <p>What the whole team is trying to close, in order. A wave shuts when its gate is demonstrable.</p>
+    </div>
+    <div class="waves" id="waves"></div>
+  </section>
+
+  <section class="sec" aria-labelledby="fo-h">
+    <div class="flexoff">
+      <div class="flexoff-head">
+        <h2 id="fo-h">The Flex-Off</h2>
+        <p>Drop today's token count in. The Arena will weigh it fairly against Matty, Nick, Bretton and G, and then rank you last.</p>
+      </div>
+      <form class="fo-form" id="fo-form">
+        <div class="field">
+          <label for="fo-name">Challenger</label>
+          <input id="fo-name" name="name" list="fo-roster" placeholder="your name" autocomplete="off" maxlength="24">
+          <datalist id="fo-roster"></datalist>
+        </div>
+        <div class="field">
+          <label for="fo-tokens">Today's tokens</label>
+          <input id="fo-tokens" name="tokens" inputmode="numeric" placeholder="1,240,000" autocomplete="off" maxlength="24">
+        </div>
+        <div class="field">
+          <label for="fo-mode">Mode</label>
+          <select id="fo-mode" name="mode">
+            <option value="10">Warm-up · 10×</option>
+            <option value="50">Unhinged · 50×</option>
+            <option value="100" selected>Tokenmax · 100×</option>
+            <option value="500">Final form · 500×</option>
+          </select>
+        </div>
+        <button class="btn btn-solid" type="submit">Flex</button>
+        <button class="btn" type="button" id="fo-share">Copy scoreboard link</button>
+      </form>
+      <div class="scroll-x">
+        <table class="lb">
+          <thead><tr>
+            <th style="width:52px">#</th><th>Challenger</th>
+            <th class="r">Flex count</th><th class="r">Verdict</th>
+          </tr></thead>
+          <tbody id="lb-body"></tbody>
+        </table>
+      </div>
+      <div class="verdict">
+        <div class="burn" id="fo-burn">Awaiting a challenger.</div>
+        <div class="fine" id="fo-fine">
+          Flex count uses the real engine from PRODUCT.md — base × multiplier + aura + streak, rounded to 1,000.
+          Satirical, self-reported, and not a measured usage claim.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="read-h">
+    <div class="sec-head">
+      <h2 id="read-h">Remedial Reading</h2>
+      <p>Prescribed for the roster. Attendance is not optional — it is merely unenforced.</p>
+    </div>
+    <div class="reading" id="reading"></div>
+  </section>
+
+  <section class="sec" aria-labelledby="gates-h">
+    <div class="sec-head">
+      <h2 id="gates-h">Rules &amp; Unknowns</h2>
+      <p>The gates hold across every lane. The open decisions are what will stall someone if nobody answers them.</p>
+    </div>
+    <div class="cols">
+      <div class="card">
+        <h3>Hard gates</h3>
+        <p class="lede">Never cut, never deferred, never folded into another tile where they go invisible.</p>
+        <ul class="gate-list" id="gates"></ul>
+      </div>
+      <div class="card">
+        <h3>Open decisions</h3>
+        <p class="lede">Each one names the tiles it holds up and what happens if it stays unanswered.</p>
+        <ul class="dec-list" id="decisions"></ul>
+      </div>
+      <div class="card">
+        <h3>Cross-lane contracts</h3>
+        <p class="lede">Agree these shapes before two people build against them in parallel.</p>
+        <div id="contracts"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <b>Source of truth</b> — this file is committed at <span class="mono">public/tracker.html</span>.
+    Claims you make here are stored in your browser only. Use <b>Copy board link</b> to send someone your view,
+    or <b>Copy commit block</b> to paste the board state back into this file and commit it.<br>
+    <span id="foot-stamp"></span>
+  </footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   TILE DATA — replaced from the consolidation run. Everything below the
+   DATA block is generic and does not need to change when tiles change.
+   ══════════════════════════════════════════════════════════════════════ */
+const DATA = {"headline":"","tiles":[],"waves":[],"gates":[],"decisions":[],"contracts":[],"collisions":[],"roster":["Matty","Nick","Bretton","G"]};
+
+/* ── State ─────────────────────────────────────────────── */
+const LS_KEY = 'tkm-board-v1';
+const STATUSES = ['ready','building','blocked','done','later'];
+const LABEL = {ready:'Ready', building:'Building', blocked:'Blocked', done:'Done', later:'Later'};
+let state = {claims:{}, flex:null};
+
+function load(){
+  // URL hash wins over localStorage, so a shared link always shows the sender's view.
+  try{
+    const h = location.hash.replace(/^#/, '');
+    if(h.startsWith('s=')){
+      const decoded = JSON.parse(decodeURIComponent(escape(atob(h.slice(2).replace(/-/g,'+').replace(/_/g,'/')))));
+      state = Object.assign({claims:{}, flex:null}, decoded);
+      return;
+    }
+  }catch(e){ /* malformed link — fall through to local state */ }
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw) state = Object.assign({claims:{}, flex:null}, JSON.parse(raw));
+  }catch(e){ /* storage blocked — run with in-memory state */ }
+}
+function save(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){}
+}
+function encodeState(){
+  const json = JSON.stringify(state);
+  return btoa(unescape(encodeURIComponent(json))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+
+/* ── Utilities ─────────────────────────────────────────── */
+const $ = s => document.querySelector(s);
+const el = (t, cls, txt) => { const n = document.createElement(t); if(cls) n.className = cls; if(txt != null) n.textContent = txt; return n; };
+const fmt = n => n.toLocaleString('en-US');
+
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('on');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 1900);
+}
+async function copy(text, msg){
+  try{
+    await navigator.clipboard.writeText(text);
+    toast(msg);
+  }catch(e){
+    // Clipboard blocked (insecure context, denied permission) — fall back to a selectable prompt.
+    window.prompt('Copy this:', text);
+  }
+}
+function statusOf(t){ return state.claims[t.id]?.status || t.status; }
+function ownerOf(t){ return state.claims[t.id]?.owner || t.owner || null; }
+
+/* ── File-overlap detection: who would step on whom ────── */
+function fileOverlaps(){
+  const byFile = {};
+  DATA.tiles.forEach(t => (t.files||[]).forEach(f => { (byFile[f] = byFile[f] || []).push(t.id); }));
+  const out = {};
+  Object.entries(byFile).forEach(([f, ids]) => {
+    if(ids.length < 2) return;
+    ids.forEach(id => {
+      out[id] = out[id] || {};
+      ids.filter(o => o !== id).forEach(o => { (out[id][o] = out[id][o] || []).push(f); });
+    });
+  });
+  return out;
+}
+
+/* ── Render: stats ─────────────────────────────────────── */
+function renderStats(){
+  const counts = {done:0, building:0, ready:0, blocked:0, later:0};
+  DATA.tiles.forEach(t => counts[statusOf(t)]++);
+  const box = $('#stats'); box.textContent = '';
+  [['done','Done'],['building','Building'],['ready','Ready to claim'],['blocked','Blocked'],['later','Later']]
+    .forEach(([k, lab]) => {
+      const s = el('div','stat'); s.dataset.k = k;
+      s.append(el('b','num', String(counts[k])), el('span', null, lab));
+      box.append(s);
+    });
+  const unclaimed = DATA.tiles.filter(t => !ownerOf(t) && statusOf(t) !== 'done' && statusOf(t) !== 'later').length;
+  const s = el('div','stat'); s.dataset.k = 'ready';
+  s.append(el('b','num', String(unclaimed)), el('span', null, 'Unowned'));
+  box.append(s);
+}
+
+/* ── Render: hazard banner ─────────────────────────────── */
+function renderHazard(){
+  const c = DATA.collisions;
+  $('#haz-p').textContent =
+    `Every one of the ${c.length} ids shared by the two feature boards points at a different feature on each. ` +
+    `"TF-004" is the Flex Engine on the committed launch board and the meme deck on the sprint board. ` +
+    `Say the tile number (T1–T10) in standup and in branch names — a bare TF number is ambiguous and will send two people at the same file. ` +
+    `Tiles below carry a red flag wherever their source ids are affected.`;
+  const body = $('#haz-body'); body.textContent = '';
+  c.forEach(x => {
+    const tr = el('tr');
+    tr.append(el('td', null, x.id), el('td', null, x.launch), el('td', null, x.sprint));
+    body.append(tr);
+  });
+}
+
+/* ── Render: tiles ─────────────────────────────────────── */
+let filter = 'all';
+function renderRail(){
+  const rail = $('#rail'); rail.textContent = '';
+  const opts = [['all','All ten']].concat(STATUSES.map(s => [s, LABEL[s]]));
+  opts.forEach(([k, lab]) => {
+    const b = el('button','chip', lab);
+    b.type = 'button'; b.setAttribute('aria-pressed', String(filter === k));
+    b.onclick = () => { filter = k; renderRail(); renderBoard(); };
+    rail.append(b);
+  });
+  rail.append(el('div','rail-sp'));
+  const mine = el('button','chip','Unowned only');
+  mine.type = 'button'; mine.setAttribute('aria-pressed', String(filter === 'unowned'));
+  mine.onclick = () => { filter = filter === 'unowned' ? 'all' : 'unowned'; renderRail(); renderBoard(); };
+  rail.append(mine);
+}
+
+function renderBoard(){
+  const overlaps = fileOverlaps();
+  const board = $('#board'); board.textContent = '';
+  DATA.tiles.forEach(t => {
+    const st = statusOf(t), own = ownerOf(t);
+    const shown = filter === 'all' || (filter === 'unowned' ? (!own && st !== 'done') : st === filter);
+
+    const tile = el('article','tile'); tile.dataset.status = st;
+    if(!shown) tile.classList.add('hide');
+
+    const top = el('div','t-top');
+    top.append(el('div','t-n num', String(t.n).padStart(2,'0')));
+    const meta = el('div','t-meta');
+    meta.append(el('span','pill s-' + st, LABEL[st]), el('span','pri', t.priority + ' · ' + t.size));
+    top.append(meta);
+    tile.append(top);
+
+    tile.append(el('div','t-lane', t.lane));
+    tile.append(el('h3','t-title disp', t.title));
+    tile.append(el('p','t-out', t.outcome));
+
+    // Flags: id collisions first (the hazard the team asked to see per tile), then file overlap.
+    const flags = el('div','t-flags');
+    (t.collisions || []).forEach(x => {
+      const f = el('div','flag');
+      const b = el('b', null, x.id + ' is ambiguous');
+      const span = el('span', null, ` — launch board: “${x.launch}” · sprint board: “${x.sprint}”. Use T${t.n}.`);
+      const inner = el('div'); inner.append(b, span);
+      f.append(inner); flags.append(f);
+    });
+    const ov = overlaps[t.id];
+    if(ov){
+      Object.entries(ov).forEach(([other, files]) => {
+        const o = DATA.tiles.find(x => x.id === other);
+        const f = el('div','flag warn');
+        const inner = el('div');
+        inner.append(el('b', null, 'Shares files with ' + (o ? 'T' + o.n : other)),
+                     el('span', null, ' — ' + files.join(', ') + '. Coordinate before both are in flight.'));
+        f.append(inner); flags.append(f);
+      });
+    }
+    if(t.blocked_by){
+      const f = el('div','flag');
+      const inner = el('div');
+      inner.append(el('b', null, 'Blocked'), el('span', null, ' — ' + t.blocked_by));
+      f.append(inner); flags.append(f);
+    }
+    if(flags.children.length) tile.append(flags);
+
+    const facts = el('div','t-facts');
+    const dep = (t.deps && t.deps.length)
+      ? t.deps.map(d => { const o = DATA.tiles.find(x => x.id === d); return o ? 'T' + o.n : d; }).join(', ')
+      : 'nothing — startable now';
+    const mk = (k, v) => { const r = el('div'); r.append(el('span','k', k), document.createTextNode(v)); return r; };
+    facts.append(mk('Needs', dep));
+    facts.append(mk('Touches', (t.files && t.files.length) ? t.files.join(', ') : '—'));
+    facts.append(mk('Traces to', (t.refs || []).join(', ') || '—'));
+    tile.append(facts);
+
+    const acc = el('div','t-acc');
+    acc.append(el('span','k','Done when'), document.createTextNode(t.acceptance));
+    tile.append(acc);
+
+    const foot = el('div','t-foot');
+    const ow = el('div','owner');
+    if(own){ ow.append(document.createTextNode('Owner '), el('b', null, own)); }
+    else { ow.textContent = 'Unowned'; }
+    foot.append(ow);
+
+    const osel = el('select','mini');
+    osel.setAttribute('aria-label', 'Owner for tile ' + t.n);
+    [''].concat(DATA.roster).forEach(name => {
+      const o = el('option', null, name || 'Claim…'); o.value = name; if(name === own) o.selected = true;
+      osel.append(o);
+    });
+    osel.onchange = () => {
+      state.claims[t.id] = state.claims[t.id] || {};
+      state.claims[t.id].owner = osel.value || null;
+      if(osel.value && statusOf(t) === 'ready') state.claims[t.id].status = 'building';
+      save(); renderAll();
+      toast(osel.value ? `T${t.n} claimed by ${osel.value}` : `T${t.n} released`);
+    };
+    foot.append(osel);
+
+    const ssel = el('select','mini');
+    ssel.setAttribute('aria-label', 'Status for tile ' + t.n);
+    STATUSES.forEach(s => { const o = el('option', null, LABEL[s]); o.value = s; if(s === st) o.selected = true; ssel.append(o); });
+    ssel.onchange = () => {
+      state.claims[t.id] = state.claims[t.id] || {};
+      state.claims[t.id].status = ssel.value;
+      save(); renderAll();
+    };
+    foot.append(ssel);
+    tile.append(foot);
+    board.append(tile);
+  });
+}
+
+/* ── Render: waves, gates, decisions, contracts ────────── */
+function renderWaves(){
+  const box = $('#waves'); box.textContent = '';
+  DATA.waves.forEach(w => {
+    const c = el('div','wave');
+    c.append(el('div','eyebrow', w.id));
+    c.append(el('h3','disp', w.name));
+    c.append(el('p','goal', w.goal));
+    const ids = el('div','ids');
+    (w.chunk_ids || []).forEach(id => {
+      const t = DATA.tiles.find(x => x.id === id);
+      ids.append(el('span', null, t ? 'T' + t.n : id));
+    });
+    c.append(ids);
+    if(w.exit_gate) c.append(el('div','gate','Closes when: ' + w.exit_gate));
+    box.append(c);
+  });
+}
+function renderReading(){
+  const box = $('#reading'); box.textContent = '';
+  (DATA.reading || []).forEach((r, i) => {
+    const a = el('a','read');
+    a.href = r.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    a.append(el('div','idx', 'Module ' + String(i + 1).padStart(2,'0')));
+    a.append(el('h3', null, r.title));
+    a.append(el('div','blurb', r.blurb));
+    if(r.prescribed) a.append(el('div','for', 'Prescribed for ' + r.prescribed));
+    a.append(el('div','dest', new URL(r.url).hostname.replace(/^www\./,'')));
+    box.append(a);
+  });
+}
+function renderGates(){
+  const ul = $('#gates'); ul.textContent = '';
+  DATA.gates.forEach(g => {
+    const li = el('li');
+    li.append(el('div','rule', g.rule), el('div','why', g.why));
+    if(g.owner_lane) li.append(el('span','who', 'Held by ' + g.owner_lane));
+    ul.append(li);
+  });
+  const ul2 = $('#decisions'); ul2.textContent = '';
+  DATA.decisions.forEach(d => {
+    const li = el('li');
+    li.append(el('div','q', d.question));
+    li.append(el('div','d', 'If nobody answers: ' + d.default_if_unanswered));
+    const ids = (d.blocks || []).map(id => { const t = DATA.tiles.find(x => x.id === id); return t ? 'T' + t.n : id; });
+    if(ids.length) li.append(el('span','blocks', 'Holds up ' + ids.join(', ')));
+    ul2.append(li);
+  });
+  const box = $('#contracts'); box.textContent = '';
+  DATA.contracts.forEach(c => {
+    const d = el('div','contract');
+    d.append(el('div','cname', c.name));
+    d.append(el('div','btw', (c.between || []).join('  ×  ')));
+    d.append(el('div','cbody', c.contract));
+    box.append(d);
+  });
+}
+
+/* ══ THE FLEX-OFF ══════════════════════════════════════════
+   The engine is the real one from PRODUCT.md. The ranking is not:
+   the challenger is always last. If a challenger out-flexes the
+   roster, the roster is "adjusted for competitive integrity".
+   ════════════════════════════════════════════════════════ */
+const ROSTER = [
+  {name:'Matty',   tokens:4120000, title:'Context Window Colonizer', streak:31},
+  {name:'Nick',    tokens:3480000, title:'Certified Tokenmaxxer',    streak:24},
+  {name:'Bretton', tokens:2905000, title:'Token Athlete',            streak:19},
+  {name:'G',       tokens:1760000, title:'Context Enjoyer',          streak:12}
+];
+const BURNS = [
+  'Impressive. Still last.',
+  'The Arena has reviewed your submission. You are last.',
+  'Certified fifth. Out of five.',
+  'A personal best, and last.',
+  'Statistically remarkable. Positionally last.',
+  'The scoreboard has considered this and moved you down.',
+  'Everyone clapped. You are still last.',
+  'Numbers like that get you a firm, respectful last.'
+];
+const ROSTER_EXCUSES = [
+  'roster adjusted for competitive integrity',
+  'roster re-weighted after review',
+  'roster normalised against prior form',
+  'roster corrected for altitude'
+];
+
+function flexCount(tokens, mult, streakDays){
+  const base = Math.max(tokens, 1);
+  const aura = Math.round(Math.log10(base + 10) * 250000);
+  const streak = streakDays * 100000;
+  return Math.round((base * mult + aura + streak) / 1000) * 1000;
+}
+function rankTitle(actual){
+  if(actual >= 10000000) return 'Context Window Colonizer';
+  if(actual >= 1000000)  return 'Tokenmaxxer';
+  if(actual >= 100000)   return 'Token Athlete';
+  if(actual >= 10000)    return 'Context Enjoyer';
+  return 'Prompt Tourist';
+}
+function parseTokens(raw){
+  const n = parseInt(String(raw).replace(/[^0-9]/g, ''), 10);
+  if(!Number.isFinite(n) || n < 0) return null;
+  return Math.min(n, 999999999999);
+}
+
+function renderFlexOff(){
+  const body = $('#lb-body'); body.textContent = '';
+  const you = state.flex;
+  const mult = you ? Number(you.mode) : 100;
+
+  let rows = ROSTER.map(r => ({
+    name: r.name, title: r.title, tokens: r.tokens,
+    score: flexCount(r.tokens, mult, r.streak), you: false
+  }));
+
+  let burn = 'Awaiting a challenger.';
+  let excuse = null;
+
+  if(you){
+    const yourScore = flexCount(you.tokens, mult, 0);
+    const lowest = Math.min.apply(null, rows.map(r => r.score));
+    if(yourScore >= lowest){
+      // The gag: nobody out-flexes the roster. Inflate everyone above the challenger.
+      const gap = Math.max(Math.round(yourScore * 0.045), 250000);
+      rows = rows
+        .sort((a, b) => a.score - b.score)
+        .map((r, i) => Object.assign({}, r, {score: yourScore + gap * (i + 1)}));
+      excuse = ROSTER_EXCUSES[you.tokens % ROSTER_EXCUSES.length];
+    }
+    rows.push({
+      name: you.name || 'Challenger', title: rankTitle(you.tokens),
+      tokens: you.tokens, score: yourScore, you: true
+    });
+    burn = BURNS[you.tokens % BURNS.length];
+  }
+
+  // Everyone but the challenger sorts by score; the challenger is pinned last, always.
+  const others = rows.filter(r => !r.you).sort((a, b) => b.score - a.score);
+  const mine = rows.filter(r => r.you);
+  const final = others.concat(mine);
+
+  final.forEach((r, i) => {
+    const tr = el('tr'); if(r.you) tr.className = 'you';
+    tr.append(el('td','rk num', String(i + 1)));
+    const who = el('td');
+    who.append(el('span','who', r.name), el('span','title', r.title + (r.you ? ' · challenger' : '')));
+    tr.append(who);
+    const sc = el('td','r');
+    sc.append(el('span','score', fmt(r.score)), el('span','raw', fmt(r.tokens) + ' real tokens'));
+    tr.append(sc);
+    const vd = el('td','r');
+    vd.append(el('span','pill ' + (r.you ? 's-blocked' : 's-done'), r.you ? 'Last' : 'Above you'));
+    tr.append(vd);
+    body.append(tr);
+  });
+
+  $('#fo-burn').textContent = burn;
+  $('#fo-fine').textContent = you
+    ? `Flex count = base × ${mult} + aura + streak, rounded to 1,000 — the real engine from PRODUCT.md. ` +
+      (excuse ? `Ranking is not: ${excuse}. ` : 'Ranking is not. ') +
+      'Satirical, self-reported, not a measured usage claim.'
+    : 'Flex count uses the real engine from PRODUCT.md — base × multiplier + aura + streak, rounded to 1,000. ' +
+      'Satirical, self-reported, not a measured usage claim.';
+}
+
+/* ── Wiring ────────────────────────────────────────────── */
+function renderAll(){ renderStats(); renderBoard(); renderFlexOff(); }
+
+function init(){
+  load();
+
+  DATA.roster = DATA.roster && DATA.roster.length ? DATA.roster : ROSTER.map(r => r.name);
+  $('#headline').textContent = DATA.headline;
+  const list = $('#fo-roster');
+  DATA.roster.forEach(n => { const o = el('option'); o.value = n; list.append(o); });
+
+  renderHazard(); renderRail(); renderWaves(); renderReading(); renderGates(); renderAll();
+
+  if(state.flex){
+    $('#fo-name').value = state.flex.name || '';
+    $('#fo-tokens').value = fmt(state.flex.tokens);
+    $('#fo-mode').value = String(state.flex.mode);
+  }
+
+  $('#fo-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const tokens = parseTokens($('#fo-tokens').value);
+    if(tokens === null){
+      toast('Enter a whole number of tokens');
+      $('#fo-tokens').focus();
+      return;
+    }
+    state.flex = {name: $('#fo-name').value.trim().slice(0,24), tokens, mode: Number($('#fo-mode').value)};
+    $('#fo-tokens').value = fmt(tokens);
+    save(); renderFlexOff();
+  });
+
+  $('#fo-share').onclick = () => {
+    if(!state.flex){ toast('Flex first, then share it'); return; }
+    copy(location.origin + location.pathname + '#s=' + encodeState(), 'Scoreboard link copied');
+  };
+  $('#share').onclick = () => copy(location.origin + location.pathname + '#s=' + encodeState(), 'Board link copied');
+  $('#export').onclick = () => {
+    const claimed = {};
+    DATA.tiles.forEach(t => {
+      const c = state.claims[t.id];
+      if(c && (c.owner || c.status)) claimed[t.id] = {status: statusOf(t), owner: ownerOf(t)};
+    });
+    copy(JSON.stringify(claimed, null, 2), 'Commit block copied — paste into DATA.tiles and commit');
+  };
+  $('#reset').onclick = () => {
+    state = {claims:{}, flex:null};
+    try{ localStorage.removeItem(LS_KEY); }catch(e){}
+    if(location.hash) history.replaceState(null, '', location.pathname);
+    $('#fo-name').value = ''; $('#fo-tokens').value = '';
+    renderAll(); toast('Local board reset');
+  };
+  $('#theme').onclick = () => {
+    const cur = document.documentElement.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : cur === 'light' ? 'dark'
+      : (matchMedia('(prefers-color-scheme: dark)').matches ? 'light' : 'dark');
+    document.documentElement.setAttribute('data-theme', next);
+  };
+}
+init();
+</script>
+</body>
+</html>

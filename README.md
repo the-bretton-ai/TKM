@@ -10,8 +10,8 @@ The Token Flexer is a playful, self-aware flex generator for people who spend to
 
 ## Project status
 
-**Phase:** product definition and build planning  
-**Target:** deployable MVP on Netlify  
+**Phase:** 75-minute implementation sprint  
+**Target:** deployable, tested MVP on Netlify  
 **Source of truth:** [Feature Board](docs/FEATURE-BOARD.md)
 
 ## What ships in v1
@@ -19,9 +19,11 @@ The Token Flexer is a playful, self-aware flex generator for people who spend to
 - Manual token entry with saved presets
 - A deterministic, dramatically inflated Flex Count
 - An animated results reveal with shareable meme output
-- A small leaderboard with history and streaks
+- A small local leaderboard with history and streaks
+- A rotating deck of original meme pictures
+- Seven deterministic daily email jokes with variable send windows
 - Email preview and one-click send to approved recipients
-- Weekly automated scoreboard digest
+- Daily automated flex drop with one-send-per-day protection
 - Delivery log, unsubscribe handling, and rate limits
 - Responsive, accessible, install-free web experience
 
@@ -34,6 +36,7 @@ The inflated number is always labeled as parody/self-reported. The email system 
 - [Architecture](docs/ARCHITECTURE.md) — stack, data flow, API surface, and deployment shape
 - [Adversarial review](docs/ADVERSARIAL.md) — abuse cases, privacy risks, and controls
 - [Delivery plan](docs/DELIVERY-PLAN.md) — milestones, branch strategy, release gates, and deployment checklist
+- [75-minute sprint](docs/SPRINT-75.md) — the build clock, cut line, and release proof
 - [Decision log](docs/DECISIONS.md) — durable product and engineering decisions
 
 ## Repository conventions

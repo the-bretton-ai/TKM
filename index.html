@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <meta
+      name="description"
+      content="Turn your real AI token count into an absurd, shareable Token Flex. Do you even tokenmax, bro?"
+    />
+    <title>The Token Flexer — Do you even tokenmax, bro?</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#flex-lab">Skip to the Flex Lab</a>
+
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="The Token Flexer home">
+        <span class="brand-mark" aria-hidden="true">TF</span>
+        <span>THE TOKEN <strong>FLEXER</strong></span>
+      </a>
+      <nav aria-label="Primary navigation">
+        <a href="#scoreboard">Scoreboard</a>
+        <a href="#protocol">The protocol</a>
+        <span class="status-chip"><i aria-hidden="true"></i> Demo-safe</span>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">Competitive context consumption</p>
+          <h1 id="hero-title">
+            YOUR TOKENS.<br />
+            <span>UNREASONABLY</span><br />
+            LOUD.
+          </h1>
+          <p class="hero-deck">
+            Enter the count. Choose your level of delusion. Leave with a flex
+            engineered to silence the group chat.
+          </p>
+          <a class="text-link" href="#flex-lab">Enter the Flex Lab <span aria-hidden="true">↘</span></a>
+        </div>
+
+        <div class="hero-visual" aria-hidden="true">
+          <div class="broadcast-label">LIVE // CONTEXT ARENA</div>
+          <img id="hero-image" src="/assets/token-athlete.png" alt="" />
+          <div class="hero-stat">
+            <span>SATIRICAL FLEX COUNT</span>
+            <strong>125,750,000</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="ticker" aria-label="Token Flexer highlights">
+        <div>
+          <span>REAL INPUT</span><b>NO FAKE DATA NEEDED</b><i>✦</i>
+          <span>ABSURD OUTPUT</span><b>UP TO 500× ENERGY</b><i>✦</i>
+          <span>HATER DELIVERY</span><b>CONSENT-BASED SMOKE</b><i>✦</i>
+          <span>REAL INPUT</span><b>NO FAKE DATA NEEDED</b>
+        </div>
+      </section>
+
+      <section class="flex-lab shell" id="flex-lab" aria-labelledby="lab-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">01 // The Flex Lab</p>
+            <h2 id="lab-title">LOAD THE REACTOR</h2>
+          </div>
+          <p>Actual tokens go in. Socially irresponsible confidence comes out.</p>
+        </div>
+
+        <div class="lab-grid">
+          <form class="control-panel" id="flex-form" novalidate>
+            <div class="field-group">
+              <label for="display-name">Your name</label>
+              <input
+                id="display-name"
+                name="displayName"
+                type="text"
+                maxlength="24"
+                placeholder="Whoever you are"
+                autocomplete="nickname"
+              />
+            </div>
+
+            <div class="field-group token-field">
+              <label for="token-count">Actual token count</label>
+              <div class="number-input">
+                <input
+                  id="token-count"
+                  name="tokenCount"
+                  inputmode="numeric"
+                  type="text"
+                  value="1,250,000"
+                  aria-describedby="token-hint token-error"
+                />
+                <span>TOKENS</span>
+              </div>
+              <div class="field-meta">
+                <small id="token-hint">Self-reported. Commas welcome.</small>
+                <small id="token-error" class="error" role="alert"></small>
+              </div>
+              <div class="presets" aria-label="Token count presets">
+                <button type="button" data-preset="100000">100K</button>
+                <button type="button" data-preset="1000000">1M</button>
+                <button type="button" data-preset="10000000">10M</button>
+              </div>
+            </div>
+
+            <fieldset class="mode-field">
+              <legend>Choose your level of delusion</legend>
+              <div class="mode-grid">
+                <label>
+                  <input type="radio" name="mode" value="warmup" />
+                  <span><b>10×</b><small>Warm-up</small></span>
+                </label>
+                <label>
+                  <input type="radio" name="mode" value="unhinged" />
+                  <span><b>50×</b><small>Unhinged</small></span>
+                </label>
+                <label>
+                  <input type="radio" name="mode" value="tokenmax" checked />
+                  <span><b>100×</b><small>Tokenmax</small></span>
+                </label>
+                <label>
+                  <input type="radio" name="mode" value="final-form" />
+                  <span><b>500×</b><small>Final form</small></span>
+                </label>
+              </div>
+            </fieldset>
+
+            <button class="primary-button" type="submit">
+              <span>FLEX MY TOKENS</span>
+              <i aria-hidden="true">↗</i>
+            </button>
+            <p class="satire-note">Results are parody and visibly labeled. Actual count remains on the record.</p>
+          </form>
+
+          <article class="result-panel" id="result-panel" aria-live="polite">
+            <div class="result-topline">
+              <span>FLEX REACTOR // ARMED</span>
+              <span class="live-dot">READY</span>
+            </div>
+            <div class="result-body">
+              <div class="result-rank">
+                <span>CURRENT RANK</span>
+                <strong id="rank-output">TOKENMAXXER</strong>
+              </div>
+              <div class="count-stack">
+                <span>SATIRICAL FLEX COUNT</span>
+                <strong id="flex-output">125,750,000</strong>
+                <div>
+                  <span id="mode-output">100× TOKENMAX</span>
+                  <span id="delta-output">FIRST RECORDED FLEX</span>
+                </div>
+              </div>
+              <div class="actual-row">
+                <span>Actual, self-reported</span>
+                <b id="actual-output">1,250,000 tokens</b>
+              </div>
+            </div>
+            <div class="result-actions">
+              <button type="button" id="download-meme">Download the receipt</button>
+              <button type="button" id="open-email">Send the smoke</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="scoreboard shell" id="scoreboard" aria-labelledby="score-title">
+        <div class="section-heading inverse">
+          <div>
+            <p class="eyebrow">02 // The anonymous scoreboard</p>
+            <h2 id="score-title">CONTEXT ARENA</h2>
+          </div>
+          <p>Today&rsquo;s standings among the five of you.</p>
+        </div>
+
+        <p class="board-headline" id="board-headline" role="status"></p>
+        <p class="board-note" id="board-note"></p>
+
+        <div class="score-card">
+          <div class="score-card-head">
+            <span>RANK</span><span>FLEXER</span><span>MARGIN</span><span>TOKENS TODAY</span><span>STATUS</span>
+          </div>
+          <ol id="score-list" class="score-list"></ol>
+        </div>
+
+        <p class="board-streak" id="board-streak"></p>
+
+        <div class="board-reading">
+          <h3>Recommended for you</h3>
+          <p id="board-pointers-note"></p>
+          <ul id="board-pointers"></ul>
+        </div>
+
+        <p class="board-disclosure" id="board-disclosure"></p>
+      </section>
+
+      <section class="protocol shell" id="protocol" aria-labelledby="protocol-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">03 // The protocol</p>
+            <h2 id="protocol-title">FLEX RESPONSIBLY</h2>
+          </div>
+          <p>The app is loud. The delivery system is deliberately disciplined.</p>
+        </div>
+        <div class="protocol-grid">
+          <article><span>01</span><h3>ENTER THE REAL</h3><p>Your actual count anchors ranks, history, and every email footer.</p></article>
+          <article><span>02</span><h3>INFLATE WITH PRIDE</h3><p>The multiplier is disclosed. Everybody is invited into the joke.</p></article>
+          <article><span>03</span><h3>SEND WITH CONSENT</h3><p>Only pre-approved recipients. Cooldowns, unsubscribe, and audit trail included.</p></article>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">TF</span><span>THE TOKEN <strong>FLEXER</strong></span></a>
+      <p>Built for the context-rich and shame-resistant.</p>
+      <p>© 2026 // SATIRE, OBVIOUSLY</p>
+    </footer>
+
+    <dialog id="email-dialog" class="email-dialog">
+      <form method="dialog" class="dialog-shell">
+        <button class="dialog-close" value="cancel" aria-label="Close email preview">×</button>
+        <p class="eyebrow">Hater delivery system</p>
+        <h2>SEND THE SMOKE</h2>
+        <p class="dialog-intro">Preview the weekly-scoreboard energy. Live delivery activates only after the server allowlist and sender are configured.</p>
+
+        <label for="recipient-alias">Approved recipient</label>
+        <select id="recipient-alias">
+          <option value="hater-one">The Group Chat Hater</option>
+          <option value="friendly-rival">Your Friendly Rival</option>
+        </select>
+
+        <div class="email-preview" id="email-preview">
+          <span>SUBJECT: Bretton just tokenmaxxed you.</span>
+          <h3>DO YOU EVEN<br />TOKENMAX, BRO?</h3>
+          <strong id="email-flex-count">125,750,000</strong>
+          <p>Satirical Flex Count · 100× multiplier<br />Actual, self-reported: 1,250,000 tokens</p>
+        </div>
+
+        <label for="send-key">Owner send key <small>(session only)</small></label>
+        <input id="send-key" type="password" autocomplete="off" placeholder="Required for live delivery" />
+        <p class="dialog-status" id="email-status" role="status">Demo-safe: no email has been sent.</p>
+
+        <div class="dialog-actions">
+          <button value="cancel">Keep it local</button>
+          <button type="button" class="primary-button" id="send-email">Send approved email</button>
+        </div>
+      </form>
+    </dialog>
+
+    <canvas id="meme-canvas" width="1600" height="900" hidden></canvas>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

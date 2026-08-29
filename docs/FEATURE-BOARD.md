@@ -1,100 +1,122 @@
 # Feature board
 
-This file is the portable source of truth until the issues are created in a dedicated GitHub repository. Each item already has an issue ID, proposed branch, priority, size, dependency, and acceptance signal.
+This board is deliberately sized for a **75-minute build sprint**, followed by tests and UI cleanup. Anything that does not improve the first flex, the rotating daily joke, or safe delivery has moved out of the MVP.
 
-## Board rules
+## Status rules
 
-- **NOW** — required for the first deploy; work may start when dependencies are clear.
-- **NEXT** — first follow-up milestone after the MVP is live.
-- **LATER** — valuable, deliberately outside current scope.
-- **DONE** — merged to `main` and verified in production or a deploy preview.
-- **BLOCKED** — cannot advance without a named external decision or credential.
+- **DONE** — merged and verified.
+- **IN PROGRESS** — actively being implemented; only one or two items at once.
+- **READY** — unblocked and part of the 75-minute sprint.
+- **STRETCH** — pull only if every P0 item passes.
+- **LATER** — useful after the deployed proof is working.
 
-Priority is `P0` launch-blocking, `P1` important, `P2` enhancement. Size is `S` (hours), `M` (roughly a day), or `L` (multi-day and should be split before implementation).
+Priority is `P0` launch-blocking, `P1` impactful, `P2` later. Size is a sprint timebox, not an estimate.
 
-## Launch board
+## 75-minute MVP board
 
-| ID | Status | Pri | Size | Area | Feature | Proposed branch | Depends on | Acceptance signal |
-|---|---|---:|---:|---|---|---|---|---|
-| TF-001 | NOW | P0 | S | Repo | Standalone project scaffold | `chore/TF-001-scaffold` | — | Clean install, dev, test, and build commands are documented and pass. |
-| TF-002 | NOW | P0 | M | Design | Visual system and responsive shell | `feat/TF-002-visual-system` | TF-001 | Desktop and 390px layouts match the product direction with no overflow. |
-| TF-003 | NOW | P0 | M | Core | Token input and saved presets | `feat/TF-003-token-input` | TF-001 | Valid counts accept separators; invalid, negative, and oversized values have clear errors. |
-| TF-004 | NOW | P0 | S | Core | Deterministic Flex Engine | `feat/TF-004-flex-engine` | TF-003 | Formula, modes, rounding, and rank boundaries have unit tests. |
-| TF-005 | NOW | P1 | M | Experience | Animated reveal sequence | `feat/TF-005-flex-reveal` | TF-002, TF-004 | Reveal completes under 2.5s and has a reduced-motion path. |
-| TF-006 | NOW | P0 | M | Meme | Original hater-meme base art | `feat/TF-006-meme-art` | TF-002 | Original licensed-for-project image exists in the repo with a text-safe composition. |
-| TF-007 | NOW | P0 | M | Meme | Browser meme compositor | `feat/TF-007-meme-compositor` | TF-004, TF-006 | Exact slogan, counts, and rank render sharply to downloadable PNG. |
-| TF-008 | NOW | P1 | S | Sharing | Download, copy, and native share | `feat/TF-008-share-actions` | TF-007 | PNG download works; supported devices receive a share payload; fallbacks are visible. |
-| TF-009 | NOW | P0 | M | Scores | Local history, deltas, and streaks | `feat/TF-009-local-history` | TF-004 | Refresh preserves history; newest run, previous delta, and streak are correct. |
-| TF-010 | NOW | P0 | M | Scores | Shared scoreboard API | `feat/TF-010-scoreboard-api` | TF-001, TF-004 | Valid entries persist; reads expose no emails or secrets; malformed writes fail closed. |
-| TF-011 | NOW | P1 | M | Scores | Scoreboard interface | `feat/TF-011-scoreboard-ui` | TF-002, TF-010 | Ranking, current-user highlight, empty state, loading, and failure states are complete. |
-| TF-012 | NOW | P0 | M | Email | Email preview and template | `feat/TF-012-email-preview` | TF-007 | Preview matches delivered structure and visibly labels satire/self-reported data. |
-| TF-013 | NOW | P0 | M | Safety | Recipient allowlist and send authorization | `feat/TF-013-send-guard` | TF-001 | Requests without the send key or approved recipient fail without provider invocation. |
-| TF-014 | NOW | P0 | M | Email | On-demand email function | `feat/TF-014-send-email` | TF-012, TF-013 | Approved test email sends once; failures are actionable; secrets never reach the client. |
-| TF-015 | NOW | P0 | M | Safety | Suppression and unsubscribe flow | `feat/TF-015-unsubscribe` | TF-013, TF-014 | Suppressed recipient cannot be sent another message; link requires no account. |
-| TF-016 | NOW | P0 | M | Automation | Weekly scoreboard digest | `feat/TF-016-weekly-digest` | TF-010, TF-014, TF-015 | Published scheduled function sends at most one digest per recipient per period. |
-| TF-017 | NOW | P0 | S | Safety | Rate limits and idempotency | `feat/TF-017-rate-limits` | TF-014, TF-016 | Replays do not duplicate sends; burst requests receive a clear 429 response. |
-| TF-018 | NOW | P1 | M | Observability | Delivery audit log | `feat/TF-018-delivery-audit` | TF-014 | Every attempt records timestamp, hashed recipient, template version, outcome, and request ID. |
-| TF-019 | NOW | P0 | M | Quality | Accessibility and keyboard pass | `fix/TF-019-accessibility` | TF-002–TF-018 | Full flow works by keyboard and screen reader; contrast and focus states pass automated checks. |
-| TF-020 | NOW | P0 | M | Quality | Unit and integration test suite | `test/TF-020-test-suite` | TF-004, TF-010, TF-014 | Formula boundaries and API denial/success paths run in CI without live email. |
-| TF-021 | NOW | P0 | S | Delivery | GitHub Actions CI | `chore/TF-021-ci` | TF-001, TF-020 | Every PR runs typecheck, tests, build, and secret scan. |
-| TF-022 | NOW | P0 | M | Delivery | Netlify production configuration | `chore/TF-022-netlify` | TF-010, TF-014, TF-016 | Deploy preview works; production env checklist is complete; scheduled function is visible. |
-| TF-023 | NOW | P0 | S | Docs | Operator runbook and environment guide | `docs/TF-023-runbook` | TF-022 | A new owner can configure demo mode and live email from the README. |
-| TF-024 | NOW | P0 | S | Release | v1 adversarial and release review | `chore/TF-024-release-review` | TF-001–TF-023 | All P0 gates pass and residual risks are recorded before the production alias moves. |
-
-## Next board
-
-| ID | Status | Pri | Size | Area | Feature | Proposed branch | Acceptance signal |
-|---|---|---:|---:|---|---|---|---|
-| TF-101 | NEXT | P1 | L | Import | OpenAI/Codex usage import | `feat/TF-101-openai-import` | User-approved export maps into actual-token history with provenance and no write-back. |
-| TF-102 | NEXT | P1 | L | Import | Anthropic usage import | `feat/TF-102-anthropic-import` | Same normalized import contract as TF-101; unknown fields fail visibly. |
-| TF-103 | NEXT | P1 | M | Groups | Private invite-only leagues | `feat/TF-103-private-leagues` | Invite token grants only the named league; scores are not globally discoverable. |
-| TF-104 | NEXT | P2 | M | Meme | Meme backdrop selector | `feat/TF-104-meme-backdrops` | At least three original accessible variants preserve exact text readability. |
-| TF-105 | NEXT | P2 | S | Sharing | Signed rematch links | `feat/TF-105-rematch-links` | Link opens a safe challenge state without exposing sender or recipient data. |
-| TF-106 | NEXT | P2 | M | Insight | Actual-token trend report | `feat/TF-106-token-trends` | Weekly/monthly views use actual counts and distinguish missing days from zero. |
-| TF-107 | NEXT | P2 | M | Platform | Installable PWA | `feat/TF-107-pwa` | Install prompt, offline shell, and update behavior pass mobile checks. |
-
-## Later board
-
-| ID | Status | Pri | Size | Area | Feature | Why later |
+| ID | Status | Pri | Timebox | Feature | Branch | Acceptance signal |
 |---|---|---:|---:|---|---|---|
-| TF-201 | LATER | P2 | L | Identity | Account sign-in | The owner-key model is enough for v1; auth adds major surface area. |
-| TF-202 | LATER | P2 | L | Social | Reactions and comments | Moderation and notification burden outweigh launch value. |
-| TF-203 | LATER | P2 | L | Platform | Multi-tenant admin | The first version is a personal/friends product, not SaaS. |
-| TF-204 | LATER | P2 | L | Monetization | Paid leagues | Validate repeat usage before adding billing or entitlement logic. |
+| TF-001 | DONE | P0 | 5m | GitHub-ready product contract | `main` | TKM has product, adversarial, architecture, delivery, issue, and PR docs. |
+| TF-002 | IN PROGRESS | P0 | 15m | Premium responsive Flex Lab | `feat/TF-002-flex-lab` | Token entry, 4 modes, dramatic reveal, mobile layout, and reduced motion work. |
+| TF-003 | READY | P0 | 7m | Tested deterministic Flex Engine | `feat/TF-003-flex-engine` | Parsing, rank boundaries, multiplier, aura, and streak formula pass unit tests. |
+| TF-004 | READY | P0 | 10m | Rotating meme deck and PNG receipt | `feat/TF-004-meme-deck` | At least 3 original pictures rotate by day; exact slogan and counts export to PNG. |
+| TF-005 | DONE | P0 | 5m | Last Place Engine and rigged board | `feat/TF-005-last-place` | Entrant always finishes sixth below the five fixed names; determinism, tie, name-collision, and reading-list tests pass. |
+| TF-006 | READY | P0 | 10m | Dynamic daily email comedy pack | `feat/TF-006-email-comedy` | 7 curated subject/body jokes and 3 images rotate deterministically by date/recipient. |
+| TF-007 | READY | P0 | 10m | Safe manual + daily delivery | `feat/TF-007-safe-delivery` | Alias allowlist, send key, consent, unsubscribe, one/day cap, and variable send window gate every send. |
+| TF-008 | READY | P0 | 5m | Adversarial and behavior tests | `test/TF-008-adversarial-tests` | Unknown alias, replay, suppression, bad input, and daily-rotation tests fail closed. |
+| TF-009 | READY | P0 | 5m | UI/accessibility cleanup | `fix/TF-009-ui-cleanup` | 390px and desktop have no overflow; keyboard, focus, contrast, and reduced motion pass. |
+| TF-010 | READY | P0 | 3m | Netlify deploy and smoke check | `chore/TF-010-deploy` | Production build deploys; demo works without credentials; live-send setup is documented. |
+
+The timeboxes total 75 minutes. TF-001 is already complete, so its five minutes become contingency for tests or deploy friction.
 
 ## Dependency spine
 
 ```text
-TF-001 scaffold
-  ├─ TF-002 visual system ─ TF-005 reveal
-  ├─ TF-003 token input ─ TF-004 flex engine ─ TF-007 meme ─ TF-008 sharing
-  │                                      └─ TF-009 history
-  ├─ TF-010 scoreboard API ─ TF-011 scoreboard UI
-  └─ TF-013 send guard ─ TF-014 email ─ TF-015 suppression ─ TF-016 automation
-                                                └─ TF-017 limits
+TF-002 Flex Lab ─┬─ TF-003 Flex Engine ─┬─ TF-004 meme deck
+                 │                      └─ TF-005 last place
+                 └─ TF-006 comedy pack ─── TF-007 safe delivery
 
-All product paths ─ TF-019 accessibility ─ TF-020 tests ─ TF-021 CI
-Server paths ──────────────────────────────────────── TF-022 deploy ─ TF-024 release
+All paths ─ TF-008 adversarial tests ─ TF-009 cleanup ─ TF-010 deploy
 ```
 
-## GitHub Project setup
+## Email rotation contract
 
-Create one GitHub Project named **Token Flexer — Build Board** with these fields:
+The scheduled function may run hourly, but it sends only when all gates pass:
+
+1. Recipient alias exists in server configuration.
+2. Recipient has explicit `consent: true`.
+3. Recipient is not suppressed.
+4. The current UTC hour matches that recipient's deterministic daily send window.
+5. No successful delivery record exists for that alias and date.
+
+Daily variation is deterministic and testable:
+
+```text
+variant_index = stable_hash(recipient_alias + local_date) % 7
+image_index   = stable_hash(local_date + recipient_alias + "image") % 3
+send_hour     = window_start + stable_hash(local_date + alias + "hour") % window_length
+```
+
+This makes the subject, joke, picture, and time feel different without using an LLM inside the delivery path, inventing hostile copy, or making tests flaky.
+
+## Last place contract
+
+The scoreboard is generated, not collected. Five fixed names hold the board — Nick, Matty, Bretton, Mike, G — and whoever fills in the blank finishes sixth. Always.
+
+```text
+standings = stable_hash("order" + local_date)              // G never below second
+gap       = tie ? 0 : max(1, round(random()^2.5 * 40))     // margins skew small on purpose
+fifth     = actual_tokens + gap
+fourth..first = each scaled above the last, strictly apart
+reading   = 3 links drawn from the band for actual_tokens
+```
+
+Two seeds, on purpose. **Standings** come from the date alone, so the entrant's number never reshuffles the five — they simply all had a bigger day. **Counts** come from the entrant's number, so the ladder scales with whatever they enter.
+
+Fifth place may land exactly on the entrant's count; a named tiebreak then resolves against them. Every board also carries three "Recommended for you" links, banded so a small count reads as inexperience and a large one reads as a problem.
+
+Full specification: [The Last Place Engine](LAST-PLACE.md). Comedy findings behind it: [Comedy adversarial review](COMEDY-ADVERSARIAL.md).
+
+Because the board is generated, there is no shared score store to tamper with and no other person's real data on it. **Score tampering** and **privacy leakage** in the adversarial review largely dissolve.
+
+## Stretch only after the P0 gate
+
+| ID | Status | Pri | Feature | Why it is not in the 75-minute path |
+|---|---|---:|---|---|
+| TF-101 | STRETCH | P2 | Native share sheet | PNG download already creates the core artifact. |
+| TF-102 | STRETCH | P2 | Shared server scoreboard | Obviated, not deferred: the board is generated, so there is nothing to collect. |
+| TF-103 | STRETCH | P2 | Email delivery audit viewer | Delivery records can be inspected in storage/logs for v1. |
+
+## Later board
+
+| ID | Status | Feature | Release test before promotion |
+|---|---|---|---|
+| TF-201 | LATER | OpenAI/Codex usage import | Read-only export provenance and schema-drift handling. |
+| TF-202 | LATER | Anthropic usage import | Same normalized import contract as TF-201. |
+| TF-203 | LATER | Private leagues | Invite-scoped access and non-discoverable scores. |
+| TF-204 | LATER | Account sign-in | Only after the owner-key personal version proves repeat use. |
+| TF-205 | LATER | Meme season packs | Original/licensed artwork with accessibility and email-client checks. |
+
+## GitHub Project configuration
+
+Project name: **Token Flexer — 75 Minute Build**
+
+Fields:
 
 | Field | Type | Values |
 |---|---|---|
 | Status | Single select | Backlog, Ready, In progress, In review, Blocked, Done |
 | Priority | Single select | P0, P1, P2 |
-| Size | Single select | S, M, L |
-| Area | Single select | Core, Design, Meme, Scores, Email, Automation, Safety, Quality, Delivery, Docs |
-| Milestone | Single select | MVP, Next, Later |
-| Target date | Date | Set only when work is pulled into Ready |
+| Timebox | Single select | 3m, 5m, 7m, 10m, 15m |
+| Area | Single select | Product, UI, Core, Meme, Scores, Email, Safety, Quality, Deploy |
+| Milestone | Single select | 75-minute MVP, Stretch, Later |
 
-Recommended views:
+Views:
 
-1. **Launch board** — board grouped by Status, filtered to Milestone = MVP.
-2. **Dependency table** — table sorted by ID with Status, Priority, Size, and blocked-by links.
-3. **Release roadmap** — roadmap grouped by Milestone.
-4. **Safety gate** — table filtered to Area = Safety or P0.
+1. **Sprint board** — grouped by Status, filtered to 75-minute MVP.
+2. **Safety gate** — table filtered to P0 or Area = Safety.
+3. **After launch** — board filtered to Stretch or Later.
 
-The repository includes structured issue forms and a pull request template under `.github/`. They become active when this folder is promoted to its own repository and merged to the default branch.
+## Definition of done
+
+An item is Done only when its acceptance signal is observable, the relevant test passes, mobile behavior is checked, and no real email address, key, or provider payload has entered git history.
