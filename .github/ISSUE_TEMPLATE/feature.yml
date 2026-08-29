@@ -1,0 +1,71 @@
+name: Token Flexer feature
+description: Propose or implement a scoped Token Flexer feature
+title: "[TF-###] "
+labels:
+  - feature
+body:
+  - type: input
+    id: board_id
+    attributes:
+      label: Board ID
+      description: Use the existing TF identifier from docs/FEATURE-BOARD.md.
+      placeholder: TF-###
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: User outcome
+      description: Describe what becomes possible for the user, not the implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Add observable, testable criteria.
+      placeholder: |
+        - [ ] Given … when … then …
+        - [ ] Error and empty states are covered
+        - [ ] Mobile, keyboard, and reduced-motion behavior is defined
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - P0 — launch blocking
+        - P1 — important
+        - P2 — enhancement
+    validations:
+      required: true
+  - type: dropdown
+    id: size
+    attributes:
+      label: Size
+      options:
+        - S — hours
+        - M — about a day
+        - L — split before implementation
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and blocked-by items
+      placeholder: TF-### or None
+  - type: textarea
+    id: safety
+    attributes:
+      label: Safety, privacy, and email impact
+      description: State "None" when genuinely not applicable.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Verification evidence
+      description: Name the tests, screenshots, logs, or deploy-preview checks required to close this issue.
+    validations:
+      required: true
