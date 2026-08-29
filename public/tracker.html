@@ -181,6 +181,25 @@ a{color:var(--volt)}
 .t-acc .k{font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.12em;
   text-transform:uppercase; color:var(--volt-dim); display:block; margin-bottom:3px}
 
+/* How to start */
+.t-start{margin:14px 16px 0; border:1px solid var(--line); background:var(--panel-2)}
+.t-start summary{cursor:pointer; padding:9px 12px; display:flex; align-items:center; gap:9px; flex-wrap:wrap;
+  list-style:none}
+.t-start summary::-webkit-details-marker{display:none}
+.t-start summary::before{content:"▸"; color:var(--volt-dim); font-size:11px; transition:transform .12s}
+.t-start[open] summary::before{transform:rotate(90deg)}
+.st-lab{font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--volt-dim); font-weight:600}
+.st-branch{font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--sky);
+  background:var(--panel); border:1px solid var(--line-hi); padding:2px 6px; margin-left:auto}
+.st-steps{margin:0; padding:2px 14px 12px 30px; display:flex; flex-direction:column; gap:7px}
+.st-steps li{font-size:13px; line-height:1.5; color:var(--ink)}
+.st-steps li::marker{color:var(--volt-dim); font-family:"IBM Plex Mono",monospace; font-size:11px}
+.st-proof{margin:0 12px 12px; padding:9px 11px; background:var(--panel); border-left:2px solid var(--sky);
+  font-family:"IBM Plex Mono",monospace; font-size:11px; line-height:1.5; color:var(--muted)}
+.st-proof .k{display:block; font-size:9.5px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--sky); margin-bottom:3px}
+
 .t-foot{margin-top:auto; padding:14px 16px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;
   border-top:1px solid var(--line)}
 .owner{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase;
@@ -476,18 +495,36 @@ tiles: [
 },
 {
   n:3, id:"T3", lane:"Experience", title:"Flex Lab shell & reveal",
-  status:"building", priority:"P0", size:"M",
+  status:"building", priority:"P0", size:"M", suggested:"Mike",
+  branch:"feat/T3-flex-lab",
   outcome:"The page, the form, the reveal sequence and the board render are wired in main.ts against index.html. styles.css is still uncommitted — that is the open edge.",
   refs:["LAUNCH:TF-002","LAUNCH:TF-005","SPRINT:TF-002"],
   deps:["T1","T2"], files:["index.html","src/main.ts","src/styles.css"],
+  steps:[
+    "Commit src/styles.css as it stands, first, so the branch starts from something nobody else is holding.",
+    "Walk the reveal in main.ts: charge-up, rolling digits, impact flash, settled scoreboard. Time it — the budget is 2.5s.",
+    "Add the prefers-reduced-motion path: a clean crossfade, not a disabled animation.",
+    "Open at 390px and 1440px and kill any horizontal overflow.",
+    "Replace ui-*-v2.png with a final pair and commit them beside the change."
+  ],
+  proof:"npx vite build, then open dist/index.html at 390px and desktop — no sideways scroll, reveal under 2.5s, reduced motion crossfades.",
   acceptance:"Desktop and 390px both render with no overflow, reveal completes under 2.5s, and a reduced-motion path exists. Screenshots committed alongside."
 },
 {
   n:4, id:"T4", lane:"Receipt", title:"Meme receipt & daily deck",
-  status:"building", priority:"P0", size:"M",
+  status:"building", priority:"P0", size:"M", suggested:"Matty",
+  branch:"feat/T4-meme-deck",
   outcome:"Three original images are in public/assets and renderMeme/downloadMeme exist. What is unproven is that the deck rotates by day and that the exact slogan and counts export sharply to PNG.",
   refs:["LAUNCH:TF-006","LAUNCH:TF-007","LAUNCH:TF-008","SPRINT:TF-004"],
   deps:["T1","T3"], files:["src/meme.ts","public/assets/token-athlete.png","public/assets/token-pit-crew.png","public/assets/token-throne.png"],
+  steps:[
+    "Pick the day's image with the stableHash already exported from email-rotation.ts. Do not write a second hash — two hashes drift and the rotation stops being testable.",
+    "Pass the chosen image into renderMeme instead of hardcoding token-athlete.png.",
+    "Draw the slogan verbatim: DO YOU EVEN TOKENMAX, BRO? — it is fixed copy, not a template.",
+    "Export at 2× and check the real count and flex count are legible when the PNG is scaled to a chat window.",
+    "Add src/meme.test.ts: same date picks the same image, a different date picks a different one, and the slogan string is present."
+  ],
+  proof:"npm run test:run passes the new meme tests, and a downloaded PNG is readable at share size.",
   acceptance:"Three pictures rotate deterministically by date; the PNG carries “DO YOU EVEN TOKENMAX, BRO?” verbatim plus real and flex counts, legible at share size."
 },
 {
@@ -500,42 +537,84 @@ tiles: [
 },
 {
   n:6, id:"T6", lane:"Trust", title:"Send path & trust gates",
-  status:"building", priority:"P0", size:"L",
+  status:"building", priority:"P0", size:"L", suggested:"Nick",
+  branch:"fix/T6-send-gates",
   outcome:"send-flex, daily-flex, unsubscribe and _lib/delivery are written with allowlist, consent, suppression, send key, idempotency key and a 429 cooldown. The test file for it is untracked — commit it before anyone touches this path.",
   refs:["LAUNCH:TF-013","LAUNCH:TF-014","LAUNCH:TF-015","LAUNCH:TF-017","LAUNCH:TF-018","SPRINT:TF-007"],
   deps:["T5"], files:["netlify/functions/send-flex.ts","netlify/functions/daily-flex.ts","netlify/functions/unsubscribe.ts","netlify/functions/_lib/delivery.ts"],
+  steps:[
+    "Before anything else: git add netlify/functions/send-flex.test.ts and commit it. Five passing tests are sitting untracked and one git clean deletes them.",
+    "Read daily-flex.ts against the five gates in FEATURE-BOARD.md and confirm each one returns before the provider call, not after.",
+    "Cover the unsubscribe round trip: signed token in, suppression record written, the next send for that alias denied.",
+    "Confirm a replayed idempotency key returns the stored record rather than sending twice.",
+    "Check the delivery log writes a hashed recipient. A plaintext address in a log is the gate failing quietly."
+  ],
+  proof:"npm run test:run with the provider mock asserting it was never invoked on any denial path.",
   acceptance:"Unknown alias, missing send key, absent consent, suppressed recipient, replayed idempotency key and a second same-day send each return without invoking the provider."
 },
 {
   n:7, id:"T7", lane:"Quality", title:"Adversarial & behaviour tests",
-  status:"building", priority:"P0", size:"M",
-  outcome:"39 tests pass across four files. send-flex.test.ts covers 5 cases but is uncommitted, and the daily-flex scheduled path and unsubscribe flow have no tests at all.",
+  status:"building", priority:"P0", size:"M", suggested:"Nick or whoever clears T6 first",
+  branch:"test/T7-adversarial",
+  outcome:"39 tests pass across four files. T6 owns the implementation gaps; this tile owns the hostile cases — replay, injection, malformed input, and the scheduled path firing at the wrong hour.",
   refs:["LAUNCH:TF-020","SPRINT:TF-008"],
-  deps:["T6"], files:["netlify/functions/send-flex.test.ts"],
+  deps:["T6"], files:["netlify/functions/daily-flex.test.ts","netlify/functions/unsubscribe.test.ts"],
+  steps:[
+    "Coordinate with T6 before starting — you both live in netlify/functions. Take the new test files; let T6 have send-flex.test.ts.",
+    "daily-flex: assert nothing sends outside the recipient's deterministic window, and nothing sends twice on one date.",
+    "unsubscribe: a forged or tampered token must not suppress anyone, and must not reveal whether an alias exists.",
+    "Feed the token field junk — negative, 1e400, \"1,2,3\", emoji, a 10k-character string — and assert a clean error rather than a throw.",
+    "Assert the rotation is stable: same alias and date give the same variant, image and hour across 100 runs."
+  ],
+  proof:"npm run test:run green with no network access and no live email credentials present.",
   acceptance:"Every denial path in T6 has a test that fails closed, daily-flex is covered for the out-of-window and already-sent cases, and the suite runs without network or live email."
 },
 {
   n:8, id:"T8", lane:"Experience", title:"Accessibility & mobile pass",
-  status:"ready", priority:"P0", size:"M",
+  status:"ready", priority:"P0", size:"M", suggested:"G",
+  branch:"fix/T8-a11y",
   outcome:"Viewport screenshots were captured but no keyboard, contrast or screen-reader pass has been run. The whole flow — entry, reveal, board, email dialog — needs to work without a mouse.",
   refs:["LAUNCH:TF-019","SPRINT:TF-009"],
   deps:["T3","T4"], files:["src/styles.css","index.html"],
+  steps:[
+    "Put the mouse down. Tab the whole flow: token entry, mode, reveal, board, download, email dialog, close. Anything you cannot reach is the bug.",
+    "Give every interactive element a visible focus state. The email dialog needs a focus trap and Escape to close.",
+    "Announce the reveal and the board with aria-live, or a screen reader gets silence where the payoff is.",
+    "Check contrast on chartreuse-over-near-black at body size, not just at heading size — it passes at 24px and can fail at 13px.",
+    "Confirm the reduced-motion path T3 added actually engages when the OS setting is on."
+  ],
+  proof:"A full keyboard-only run from empty form to downloaded PNG, plus an automated contrast pass with no failures.",
   acceptance:"Full flow completes by keyboard alone, focus is always visible, contrast passes automated checks, and prefers-reduced-motion has a clean crossfade path."
 },
 {
   n:9, id:"T9", lane:"Platform", title:"CI & secret scan",
-  status:"ready", priority:"P0", size:"S",
-  outcome:"The real hole. .github has issue and PR templates but no workflows directory at all, so nothing runs on a pull request. With four people about to work in parallel this is the first thing to fix.",
+  status:"done", priority:"P0", size:"S", suggested:"Claude — done",
+  branch:"chore/T9-ci",
+  outcome:"Done. Every PR now runs typecheck, the vitest suite, a production build, and a self-contained secret scan, each as its own step so a red check names what broke. The scan reads tracked files only and needs no third-party action.",
   refs:["LAUNCH:TF-021"],
-  deps:[], files:[".github/workflows/ci.yml"],
+  deps:[], files:[".github/workflows/ci.yml","scripts/secret-scan.mjs"],
+  steps:[
+    "Turn on branch protection for main and mark the Typecheck, test, build, scan check required — the workflow alone does not block a merge.",
+    "If the scan ever flags documentation, use an example.com address or an empty assignment rather than loosening the pattern."
+  ],
+  proof:"Verified locally end to end: tsc --noEmit clean, 39/39 tests, vite build, scan clean over 45 tracked files. Scan also proven against planted secrets — it caught a Resend key, a real email address, and a non-empty SEND_KEY, and correctly ignored a process.env reference and an example.com address.",
   acceptance:"Every PR runs typecheck, vitest, production build and a secret scan, and a red check blocks merge."
 },
 {
   n:10, id:"T10", lane:"Platform", title:"Deploy, runbook & release gate",
-  status:"ready", priority:"P0", size:"M",
-  outcome:"netlify.toml is written with CSP, security headers and the hourly daily-flex schedule. Nothing has been deployed, the README carries almost no environment guidance, and no release review has been run.",
+  status:"building", priority:"P0", size:"M", suggested:"Bretton — he owns the Netlify account",
+  branch:"chore/T10-deploy",
+  outcome:"netlify.toml is written with CSP, security headers and the hourly daily-flex schedule. Deploying now so the board is shareable; the runbook and the release review are still open.",
   refs:["LAUNCH:TF-022","LAUNCH:TF-023","LAUNCH:TF-024","SPRINT:TF-010"],
   deps:["T7","T9"], files:["netlify.toml","README.md"],
+  steps:[
+    "netlify link (or init), then netlify deploy --build. Deploy with no env vars first and confirm demo mode is genuinely usable.",
+    "Set TOKEN_FLEXER_* and EMAIL_* in the Netlify UI only. Nothing goes in git — CI now fails the build if it does.",
+    "Write the environment table into README.md so a new owner can turn on live email without reading the source.",
+    "Invoke daily-flex manually from a deploy preview and confirm every non-consenting recipient is skipped.",
+    "Record the production URL and release commit in DECISIONS.md."
+  ],
+  proof:"Production URL smoke-tested at 390px and desktop, scheduled function visible in the Netlify UI, and one controlled send with an audit record.",
   acceptance:"A deploy preview serves the app with no credentials, the scheduled function is visible, a new owner can configure live email from the README, and every P0 gate is signed off."
 }
 ],
@@ -789,6 +868,25 @@ function renderBoard(){
     facts.append(mk('Touches', (t.files && t.files.length) ? t.files.join(', ') : '—'));
     facts.append(mk('Traces to', (t.refs || []).join(', ') || '—'));
     tile.append(facts);
+
+    // How to start: the branch, the ordered first moves, and the command that proves it.
+    if(t.steps && t.steps.length){
+      const d = el('details','t-start');
+      if(st !== 'done') d.open = true;
+      const sum = el('summary');
+      sum.append(el('span','st-lab', st === 'done' ? 'What was done' : 'How to start'));
+      if(t.branch) sum.append(el('code','st-branch', t.branch));
+      d.append(sum);
+      const ol = el('ol','st-steps');
+      t.steps.forEach(s => ol.append(el('li', null, s)));
+      d.append(ol);
+      if(t.proof){
+        const p = el('div','st-proof');
+        p.append(el('span','k', st === 'done' ? 'Verified' : 'Proves it'), document.createTextNode(t.proof));
+        d.append(p);
+      }
+      tile.append(d);
+    }
 
     const acc = el('div','t-acc');
     acc.append(el('span','k','Done when'), document.createTextNode(t.acceptance));
