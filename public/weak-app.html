@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="robots" content="noindex" />
+    <title>404 — Alex and Mike's Weak App</title>
+    <style>
+      /* Self-contained on purpose. netlify.toml sets img-src 'self' data: blob:,
+         so the puppy is inline SVG rather than a hotlinked image that the CSP
+         would silently block. */
+      :root {
+        --ink: #090a09;
+        --white: #fbfbf6;
+        --muted: #979d94;
+        --lime: #d7ff36;
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        background: var(--ink);
+        color: var(--white);
+        font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+        display: grid;
+        place-items: center;
+        padding: 2rem;
+        text-align: center;
+      }
+      .wrap { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; max-width: 30rem; }
+      .code {
+        font-family: "Arial Black", "Helvetica Neue", sans-serif;
+        font-weight: 900;
+        font-size: clamp(4rem, 18vw, 9rem);
+        line-height: 0.85;
+        letter-spacing: -0.03em;
+        margin: 0;
+      }
+      p { margin: 0; color: var(--muted); font-size: 0.95rem; line-height: 1.6; }
+      svg { width: min(240px, 60vw); height: auto; display: block; }
+      a {
+        color: var(--lime);
+        font-size: 0.78rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        text-decoration: none;
+        border-bottom: 1px solid currentColor;
+        padding-bottom: 2px;
+        margin-top: 0.75rem;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+      }
+      a:hover, a:focus-visible { color: var(--white); }
+      @media (prefers-reduced-motion: no-preference) {
+        .tear { animation: drip 3.2s ease-in-out infinite; }
+        @keyframes drip {
+          0%, 60% { transform: translateY(0); opacity: 0; }
+          70% { opacity: 1; }
+          100% { transform: translateY(26px); opacity: 0; }
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <p class="code">404</p>
+
+      <svg viewBox="0 0 260 230" role="img" aria-label="A sad puppy with droopy ears and a single tear.">
+        <!-- ears -->
+        <ellipse cx="58" cy="130" rx="30" ry="58" fill="#6b5545" transform="rotate(-8 58 130)" />
+        <ellipse cx="202" cy="130" rx="30" ry="58" fill="#6b5545" transform="rotate(8 202 130)" />
+        <!-- head -->
+        <ellipse cx="130" cy="112" rx="82" ry="74" fill="#9a7d66" />
+        <!-- brow patch -->
+        <ellipse cx="97" cy="86" rx="26" ry="20" fill="#8a6e58" />
+        <!-- eyes -->
+        <ellipse cx="100" cy="104" rx="14" ry="16" fill="#1b1712" />
+        <ellipse cx="160" cy="104" rx="14" ry="16" fill="#1b1712" />
+        <circle cx="105" cy="98" r="4.5" fill="#fbfbf6" />
+        <circle cx="165" cy="98" r="4.5" fill="#fbfbf6" />
+        <!-- sad brows -->
+        <path d="M84 82 q16 -9 31 -2" stroke="#5d4838" stroke-width="5" fill="none" stroke-linecap="round" />
+        <path d="M145 80 q15 -7 31 2" stroke="#5d4838" stroke-width="5" fill="none" stroke-linecap="round" />
+        <!-- muzzle -->
+        <ellipse cx="130" cy="146" rx="40" ry="30" fill="#b39a84" />
+        <ellipse cx="130" cy="133" rx="13" ry="9" fill="#1b1712" />
+        <path d="M130 142 v10" stroke="#1b1712" stroke-width="4" stroke-linecap="round" />
+        <!-- frown -->
+        <path d="M112 162 q18 -12 36 0" stroke="#1b1712" stroke-width="4.5" fill="none" stroke-linecap="round" />
+        <!-- tear -->
+        <path class="tear" d="M100 124 q6 9 0 13 q-6 -4 0 -13 z" fill="#8fd4e8" />
+      </svg>
+
+      <p>This page does not exist. Neither, in any meaningful sense, does the app.</p>
+      <a href="/">Back to the arena</a>
+    </main>
+  </body>
+</html>

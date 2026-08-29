@@ -1024,26 +1024,31 @@ const READING_BANDS = [
     ['Claude for Dummies','https://www.linkedin.com/in/iamalexschwartz/'],
     ['Touch typing','https://en.wikipedia.org/wiki/Touch_typing'],
     ['Shopping list','https://en.wikipedia.org/wiki/Shopping_list'],
-    ['How to use a keyboard','https://en.wikipedia.org/wiki/Computer_keyboard']]},
+    ['How to use a keyboard','https://en.wikipedia.org/wiki/Computer_keyboard'],
+    ['Monster Jobs','https://www.monster.com/jobs']]},
   {max:100000, pool:[
     ['Claude for Dummies','https://www.linkedin.com/in/iamalexschwartz/'],
     ['Prompt engineering','https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview'],
     ['What is a language model?','https://en.wikipedia.org/wiki/Language_model'],
-    ['Who is JSON?','https://www.json.org/json-en.html']]},
+    ['Who is JSON?','https://www.json.org/json-en.html'],
+    ['Monster Jobs','https://www.monster.com/jobs']]},
   {max:1000000, pool:[
     ['Participation trophy','https://en.wikipedia.org/wiki/Participation_trophy'],
     ['How to be more productive','https://en.wikipedia.org/wiki/Productivity'],
     ['Claude for Dummies','https://www.linkedin.com/in/iamalexschwartz/'],
-    ['Who is JSON?','https://www.json.org/json-en.html']]},
+    ['Who is JSON?','https://www.json.org/json-en.html'],
+    ['Monster Jobs','https://www.monster.com/jobs']]},
   {max:10000000, pool:[
     ['Sunk cost fallacy','https://en.wikipedia.org/wiki/Sunk_cost'],
     ['Diminishing returns','https://en.wikipedia.org/wiki/Diminishing_returns'],
-    ['Time management','https://en.wikipedia.org/wiki/Time_management']]},
+    ['Time management','https://en.wikipedia.org/wiki/Time_management'],
+    ['Monster Jobs','https://www.monster.com/jobs']]},
   {max:Infinity, pool:[
     ['Sunk cost fallacy','https://en.wikipedia.org/wiki/Sunk_cost'],
     ['Going outside','https://en.wikipedia.org/wiki/Outdoor_recreation'],
     ['Hobby','https://en.wikipedia.org/wiki/Hobby'],
-    ['Diminishing returns','https://en.wikipedia.org/wiki/Diminishing_returns']]}
+    ['Diminishing returns','https://en.wikipedia.org/wiki/Diminishing_returns'],
+    ['Monster Jobs','https://www.monster.com/jobs']]}
 ];
 function pointersFor(tokens, rng){
   const band = READING_BANDS.find(b => tokens < b.max) || READING_BANDS[READING_BANDS.length - 1];

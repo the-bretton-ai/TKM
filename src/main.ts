@@ -27,11 +27,8 @@ const nameInput = requiredElement<HTMLInputElement>("display-name");
 const tokenInput = requiredElement<HTMLInputElement>("token-count");
 const tokenError = requiredElement<HTMLElement>("token-error");
 const resultPanel = requiredElement<HTMLElement>("result-panel");
-const rankOutput = requiredElement<HTMLElement>("rank-output");
-const flexOutput = requiredElement<HTMLElement>("flex-output");
 const actualOutput = requiredElement<HTMLElement>("actual-output");
-const modeOutput = requiredElement<HTMLElement>("mode-output");
-const deltaOutput = requiredElement<HTMLElement>("delta-output");
+const coinPile = requiredElement<HTMLElement>("coin-pile");
 const scoreList = requiredElement<HTMLOListElement>("score-list");
 const boardHeadline = requiredElement<HTMLElement>("board-headline");
 const boardNote = requiredElement<HTMLElement>("board-note");
@@ -71,20 +68,9 @@ function formatInput(): void {
   if (parsed) tokenInput.value = formatFull(parsed);
 }
 
-function renderResult(result: FlexResult, previous?: ScoreRecord): void {
-  rankOutput.textContent = result.rank.toUpperCase();
-  flexOutput.textContent = formatFull(result.flexCount);
+function renderResult(result: FlexResult, _previous?: ScoreRecord): void {
   actualOutput.textContent = `${formatFull(result.actualTokens)} tokens`;
-  modeOutput.textContent = `${result.multiplier}× ${result.modeLabel.toUpperCase()}`;
   emailFlexCount.textContent = formatFull(result.flexCount);
-
-  if (!previous) {
-    deltaOutput.textContent = "FIRST RECORDED FLEX";
-  } else {
-    const delta = result.flexCount - previous.flexCount;
-    const direction = delta >= 0 ? "+" : "−";
-    deltaOutput.textContent = `${direction}${formatCompact(Math.abs(delta))} VS LAST FLEX`;
-  }
 
   resultPanel.classList.remove("is-flexing");
   window.requestAnimationFrame(() => resultPanel.classList.add("is-flexing"));
@@ -157,10 +143,51 @@ const chartPosition = requiredElement<HTMLElement>("chart-position");
 const evidenceGrid = requiredElement<HTMLElement>("evidence-grid");
 const courseList = requiredElement<HTMLUListElement>("course-list");
 const supportAnswer = requiredElement<HTMLElement>("support-answer");
-const talkJsonButton = requiredElement<HTMLButtonElement>("talk-json");
 const talkClaudeButton = requiredElement<HTMLButtonElement>("talk-claude");
 
 const SVG_NS = "http://www.w3.org/2000/svg";
+
+/**
+ * A heap of tokens, drawn once. Rows are laid out bottom-up with a fixed
+ * nudge pattern rather than random offsets, so the pile is identical on every
+ * render and never jitters when the panel re-reveals.
+ */
+function renderCoinPile(): void {
+  const rows = [7, 6, 4, 3, 1];
+  const r = 30;
+  const squash = 0.58;
+  const xStep = r * 1.72;
+  const yStep = r * 0.62;
+  const nudge = [0, -7, 5, -4, 8, -6, 3];
+
+  const width = 620;
+  const height = rows.length * yStep + r * 2.4;
+  const baseY = height - r * 1.1;
+
+  const root = svg("svg", { viewBox: `0 0 ${width} ${height}`, width: "100%", height: "auto" });
+
+  const hex = (cx: number, cy: number, radius: number) =>
+    Array.from({ length: 6 }, (_, i) => {
+      const a = (Math.PI / 180) * (60 * i);
+      return `${cx + radius * Math.cos(a)},${cy + radius * squash * Math.sin(a)}`;
+    }).join(" ");
+
+  rows.forEach((count, rowIndex) => {
+    const cy = baseY - rowIndex * yStep;
+    const rowWidth = (count - 1) * xStep;
+    const startX = (width - rowWidth) / 2;
+
+    for (let i = 0; i < count; i += 1) {
+      const cx = startX + i * xStep + (nudge[i % nudge.length] ?? 0);
+      // Edge first, then face, so each token reads as having thickness.
+      root.append(svg("polygon", { points: hex(cx, cy + 9, r), fill: "#7f9b1c" }));
+      root.append(svg("polygon", { points: hex(cx, cy, r), fill: RIVAL_FILL, stroke: "#5f7514", "stroke-width": 1.5 }));
+      root.append(svg("polygon", { points: hex(cx, cy, r * 0.52), fill: "none", stroke: "#7f9b1c", "stroke-width": 1.5 }));
+    }
+  });
+
+  coinPile.replaceChildren(root);
+}
 
 /**
  * Rivals in lime, you in coral. Validated: deutan ΔE 24.1, so the one
@@ -309,7 +336,11 @@ function renderPositionChart(board: LastPlaceBoard): void {
   chartPosition.replaceChildren(root);
 }
 
-function renderEvidence(): void {
+function renderEvidence(board: LastPlaceBoard): void {
+  // Credit the friends, never the entrant - the exhibits are of them, and the
+  // entrant is the one being shown them. Takes the top three off the board.
+  const friends = board.rows.filter((row) => !row.isYou).map((row) => row.name);
+
   const exhibits: Array<[string, string, string]> = [
     ["/assets/token-athlete.png", "Exhibit A", "You, allegedly, at peak performance."],
     ["/assets/token-pit-crew.png", "Exhibit B", "Support staff, reviewing the haul."],
@@ -317,7 +348,8 @@ function renderEvidence(): void {
   ];
 
   evidenceGrid.replaceChildren();
-  for (const [src, label, caption] of exhibits) {
+  for (const [index, [src, label, caption]] of exhibits.entries()) {
+    const credit = friends[index] ?? friends[friends.length - 1] ?? "";
     const figure = document.createElement("figure");
     const image = document.createElement("img");
     image.src = src;
@@ -328,9 +360,12 @@ function renderEvidence(): void {
     const cap = document.createElement("figcaption");
     const strong = document.createElement("b");
     strong.textContent = label;
+    const name = document.createElement("em");
+    name.className = "exhibit-name";
+    name.textContent = credit;
     const text = document.createElement("span");
     text.textContent = caption;
-    cap.append(strong, text);
+    cap.append(strong, name, text);
     figure.append(image, cap);
     evidenceGrid.append(figure);
   }
@@ -349,7 +384,7 @@ function renderCourses(): void {
     ],
     [
       "Alex and Mike's Weak App",
-      "https://www.youtube.com/results?search_query=alex+and+mike%27s+weak+app",
+      "/weak-app.html",
       "A cautionary tale. Watch to the end.",
     ],
     [
@@ -419,8 +454,9 @@ form.addEventListener("submit", (event) => {
   renderStats(board);
   renderHaulChart(board);
   renderPositionChart(board);
-  renderEvidence();
+  renderEvidence(board);
   renderCourses();
+  renderCoinPile();
   revealResults();
 
   scoreboardSection.scrollIntoView({
@@ -429,28 +465,44 @@ form.addEventListener("submit", (event) => {
   });
 });
 
-talkJsonButton.addEventListener("click", () => {
-  supportAnswer.replaceChildren();
-  const line = document.createElement("p");
-  line.textContent =
-    "JSON is not a person. JSON has never been a person. JSON is a data interchange format and cannot hold space for you.";
-  const link = document.createElement("a");
-  link.href = "https://www.json.org/json-en.html";
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  link.textContent = "Read about JSON anyway";
-  supportAnswer.append(line, link);
-});
+
+/**
+ * Option B is a support queue that loses patience. Three clicks, then it gives
+ * up on you. Clicks past the third keep the final message rather than cycling.
+ */
+const CLAUDE_QUEUE: Array<{ line: string; href: string; label: string }> = [
+  {
+    line: "Connecting you to Claude. Please hold.",
+    href: "https://claude.ai",
+    label: "Speak to Claude",
+  },
+  {
+    line: "Still connecting. Claude is reviewing your placement and has some questions.",
+    href: "https://claude.ai",
+    label: "Speak to Claude",
+  },
+  {
+    line: "Stop clicking motherfucker. Go back to ChatGPT.",
+    href: "https://chatgpt.com",
+    label: "Go back to ChatGPT",
+  },
+];
+
+let claudeClicks = 0;
 
 talkClaudeButton.addEventListener("click", () => {
+  claudeClicks += 1;
+  const step = CLAUDE_QUEUE[Math.min(claudeClicks, CLAUDE_QUEUE.length) - 1];
+  if (!step) return;
+
   supportAnswer.replaceChildren();
   const line = document.createElement("p");
-  line.textContent = "A reasonable choice. Claude can help with the app. Not the placing.";
+  line.textContent = step.line;
   const link = document.createElement("a");
-  link.href = "https://claude.ai";
+  link.href = step.href;
   link.target = "_blank";
   link.rel = "noopener noreferrer";
-  link.textContent = "Speak to Claude";
+  link.textContent = step.label;
   supportAnswer.append(line, link);
 });
 
