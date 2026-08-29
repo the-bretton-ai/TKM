@@ -12,7 +12,7 @@ vi.mock("@netlify/blobs", () => ({
   getStore: () => store,
 }));
 
-import sendFlex from "./send-flex";
+import sendFlex from "../send-flex";
 
 const validPayload = {
   recipientAlias: "friendly-rival",
