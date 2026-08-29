@@ -245,6 +245,13 @@ select.mini:hover,button.mini:hover{border-color:var(--volt)}
 .verdict .fine{font-family:"IBM Plex Mono",monospace; font-size:10.5px; color:var(--faint);
   line-height:1.5; flex:1 1 240px}
 
+.pointers{padding:0 22px 20px; font-family:"IBM Plex Mono",monospace; font-size:11.5px; line-height:1.7;
+  color:var(--muted); border-top:1px dashed var(--line-hi); padding-top:14px; margin:0 22px 18px}
+.pointers:empty{display:none}
+.pointers .pt-lab{color:var(--faint); display:block; letter-spacing:.06em; text-transform:uppercase; font-size:10px; margin-bottom:5px}
+.pointers a{color:var(--volt); text-decoration:none; border-bottom:1px solid var(--volt-dim)}
+.pointers a:hover{background:var(--volt); color:var(--volt-ink)}
+
 /* ── Remedial reading ───────────────────────────────────── */
 .reading{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:2px;
   background:var(--line); border:1px solid var(--line)}
@@ -368,7 +375,7 @@ footer b{color:var(--muted); font-weight:600}
     <div class="flexoff">
       <div class="flexoff-head">
         <h2 id="fo-h">The Flex-Off</h2>
-        <p>Drop today's token count in. The Arena will weigh it fairly against Matty, Nick, Bretton and G, and then rank you last.</p>
+        <p>Nick, Matty, Bretton, Mike and G hold the board. Type your name and today's real token count into the blank and you finish sixth. Always sixth — including the day you enter a number specifically to stop being sixth. Mirrors <span class="mono">docs/LAST-PLACE.md</span>.</p>
       </div>
       <form class="fo-form" id="fo-form">
         <div class="field">
@@ -380,16 +387,7 @@ footer b{color:var(--muted); font-weight:600}
           <label for="fo-tokens">Today's tokens</label>
           <input id="fo-tokens" name="tokens" inputmode="numeric" placeholder="1,240,000" autocomplete="off" maxlength="24">
         </div>
-        <div class="field">
-          <label for="fo-mode">Mode</label>
-          <select id="fo-mode" name="mode">
-            <option value="10">Warm-up · 10×</option>
-            <option value="50">Unhinged · 50×</option>
-            <option value="100" selected>Tokenmax · 100×</option>
-            <option value="500">Final form · 500×</option>
-          </select>
-        </div>
-        <button class="btn btn-solid" type="submit">Flex</button>
+        <button class="btn btn-solid" type="submit">Enter the board</button>
         <button class="btn" type="button" id="fo-share">Copy scoreboard link</button>
       </form>
       <div class="scroll-x">
@@ -403,11 +401,9 @@ footer b{color:var(--muted); font-weight:600}
       </div>
       <div class="verdict">
         <div class="burn" id="fo-burn">Awaiting a challenger.</div>
-        <div class="fine" id="fo-fine">
-          Flex count uses the real engine from PRODUCT.md — base × multiplier + aura + streak, rounded to 1,000.
-          Satirical, self-reported, and not a measured usage claim.
-        </div>
+        <div class="fine" id="fo-fine"></div>
       </div>
+      <div class="pointers" id="fo-point"></div>
     </div>
   </section>
 
@@ -457,7 +453,167 @@ footer b{color:var(--muted); font-weight:600}
    TILE DATA — replaced from the consolidation run. Everything below the
    DATA block is generic and does not need to change when tiles change.
    ══════════════════════════════════════════════════════════════════════ */
-const DATA = {"headline":"","tiles":[],"waves":[],"gates":[],"decisions":[],"contracts":[],"collisions":[],"roster":["Matty","Nick","Bretton","G"]};
+const DATA = {
+headline: "Further along than either feature board admits. 39 tests pass across four files, the Last Place Engine and the send path are real, and netlify.toml is written. What is actually missing is CI, a deploy, and a commit for the work sitting in the working tree.",
+roster: ["Nick","Matty","Bretton","Mike","G"],
+
+tiles: [
+{
+  n:1, id:"T1", lane:"Core", title:"Flex Engine & token input",
+  status:"done", priority:"P0", size:"S",
+  outcome:"The deterministic scoring formula, the four modes, the rank ladder, and token parsing all exist and are covered. base × multiplier + aura + streak, rounded to 1,000.",
+  refs:["LAUNCH:TF-003","LAUNCH:TF-004","SPRINT:TF-003"],
+  deps:[], files:["src/flex-engine.ts","src/flex-engine.test.ts"],
+  acceptance:"src/flex-engine.test.ts — 6 tests green. Verified: multiplier, aura, streak, rank boundaries, rounding."
+},
+{
+  n:2, id:"T2", lane:"Core", title:"Last Place Engine",
+  status:"done", priority:"P0", size:"M",
+  outcome:"Five fixed names hold the board, the entrant lands sixth every time, standings are seeded by date and counts by your number. Tiebreaks, name collisions, and the banded reading list are all in.",
+  refs:["SPRINT:TF-005"],
+  deps:["T1"], files:["src/last-place.ts","src/last-place.test.ts"],
+  acceptance:"22 tests green across 5 names × 4 dates × 11 counts. Entrant is position six exactly once, always; G never below second; every count a safe integer."
+},
+{
+  n:3, id:"T3", lane:"Experience", title:"Flex Lab shell & reveal",
+  status:"building", priority:"P0", size:"M",
+  outcome:"The page, the form, the reveal sequence and the board render are wired in main.ts against index.html. styles.css is still uncommitted — that is the open edge.",
+  refs:["LAUNCH:TF-002","LAUNCH:TF-005","SPRINT:TF-002"],
+  deps:["T1","T2"], files:["index.html","src/main.ts","src/styles.css"],
+  acceptance:"Desktop and 390px both render with no overflow, reveal completes under 2.5s, and a reduced-motion path exists. Screenshots committed alongside."
+},
+{
+  n:4, id:"T4", lane:"Receipt", title:"Meme receipt & daily deck",
+  status:"building", priority:"P0", size:"M",
+  outcome:"Three original images are in public/assets and renderMeme/downloadMeme exist. What is unproven is that the deck rotates by day and that the exact slogan and counts export sharply to PNG.",
+  refs:["LAUNCH:TF-006","LAUNCH:TF-007","LAUNCH:TF-008","SPRINT:TF-004"],
+  deps:["T1","T3"], files:["src/meme.ts","public/assets/token-athlete.png","public/assets/token-pit-crew.png","public/assets/token-throne.png"],
+  acceptance:"Three pictures rotate deterministically by date; the PNG carries “DO YOU EVEN TOKENMAX, BRO?” verbatim plus real and flex counts, legible at share size."
+},
+{
+  n:5, id:"T5", lane:"Comedy", title:"Comedy pack & email template",
+  status:"done", priority:"P0", size:"M",
+  outcome:"Seven curated variants and three images rotate deterministically by alias and date, with a stable send-hour draw and HTML escaping on the render path.",
+  refs:["LAUNCH:TF-012","SPRINT:TF-006"],
+  deps:[], files:["src/email-rotation.ts","src/email-rotation.test.ts"],
+  acceptance:"6 tests green. Same alias + date picks the same variant, image and hour; a different date changes them."
+},
+{
+  n:6, id:"T6", lane:"Trust", title:"Send path & trust gates",
+  status:"building", priority:"P0", size:"L",
+  outcome:"send-flex, daily-flex, unsubscribe and _lib/delivery are written with allowlist, consent, suppression, send key, idempotency key and a 429 cooldown. The test file for it is untracked — commit it before anyone touches this path.",
+  refs:["LAUNCH:TF-013","LAUNCH:TF-014","LAUNCH:TF-015","LAUNCH:TF-017","LAUNCH:TF-018","SPRINT:TF-007"],
+  deps:["T5"], files:["netlify/functions/send-flex.ts","netlify/functions/daily-flex.ts","netlify/functions/unsubscribe.ts","netlify/functions/_lib/delivery.ts"],
+  acceptance:"Unknown alias, missing send key, absent consent, suppressed recipient, replayed idempotency key and a second same-day send each return without invoking the provider."
+},
+{
+  n:7, id:"T7", lane:"Quality", title:"Adversarial & behaviour tests",
+  status:"building", priority:"P0", size:"M",
+  outcome:"39 tests pass across four files. send-flex.test.ts covers 5 cases but is uncommitted, and the daily-flex scheduled path and unsubscribe flow have no tests at all.",
+  refs:["LAUNCH:TF-020","SPRINT:TF-008"],
+  deps:["T6"], files:["netlify/functions/send-flex.test.ts"],
+  acceptance:"Every denial path in T6 has a test that fails closed, daily-flex is covered for the out-of-window and already-sent cases, and the suite runs without network or live email."
+},
+{
+  n:8, id:"T8", lane:"Experience", title:"Accessibility & mobile pass",
+  status:"ready", priority:"P0", size:"M",
+  outcome:"Viewport screenshots were captured but no keyboard, contrast or screen-reader pass has been run. The whole flow — entry, reveal, board, email dialog — needs to work without a mouse.",
+  refs:["LAUNCH:TF-019","SPRINT:TF-009"],
+  deps:["T3","T4"], files:["src/styles.css","index.html"],
+  acceptance:"Full flow completes by keyboard alone, focus is always visible, contrast passes automated checks, and prefers-reduced-motion has a clean crossfade path."
+},
+{
+  n:9, id:"T9", lane:"Platform", title:"CI & secret scan",
+  status:"ready", priority:"P0", size:"S",
+  outcome:"The real hole. .github has issue and PR templates but no workflows directory at all, so nothing runs on a pull request. With four people about to work in parallel this is the first thing to fix.",
+  refs:["LAUNCH:TF-021"],
+  deps:[], files:[".github/workflows/ci.yml"],
+  acceptance:"Every PR runs typecheck, vitest, production build and a secret scan, and a red check blocks merge."
+},
+{
+  n:10, id:"T10", lane:"Platform", title:"Deploy, runbook & release gate",
+  status:"ready", priority:"P0", size:"M",
+  outcome:"netlify.toml is written with CSP, security headers and the hourly daily-flex schedule. Nothing has been deployed, the README carries almost no environment guidance, and no release review has been run.",
+  refs:["LAUNCH:TF-022","LAUNCH:TF-023","LAUNCH:TF-024","SPRINT:TF-010"],
+  deps:["T7","T9"], files:["netlify.toml","README.md"],
+  acceptance:"A deploy preview serves the app with no credentials, the scheduled function is visible, a new owner can configure live email from the README, and every P0 gate is signed off."
+}
+],
+
+waves: [
+{ id:"Wave 0", name:"Already landed", goal:"Banked and committed. Do not reopen these without a reason — they are the foundation the other seven build on.",
+  exit_gate:"Closed. 34 of the 39 passing tests live here.", chunk_ids:["T1","T2","T5"] },
+{ id:"Wave 1", name:"Stop the bleeding", goal:"Get the working tree committed and put a gate in front of it before four people start pushing.",
+  exit_gate:"styles.css and send-flex.test.ts are committed and CI is green on a pull request.", chunk_ids:["T9","T3","T7"] },
+{ id:"Wave 2", name:"Close the loop", goal:"The demo works end to end with no credentials: enter tokens, get the reveal, finish sixth, download the receipt.",
+  exit_gate:"A visitor reaches a downloaded PNG in under 30 seconds at 390px and desktop.", chunk_ids:["T4","T8"] },
+{ id:"Wave 3", name:"Prove the send", goal:"Every denial path in the send path is tested and fails closed before a single real message goes out.",
+  exit_gate:"One controlled send lands, and every gate has a test proving the provider is never reached.", chunk_ids:["T6"] },
+{ id:"Wave 4", name:"Ship it", goal:"Production deploy, operator runbook, and the release review.",
+  exit_gate:"Production URL smoke-tested on desktop and mobile; residual risks recorded.", chunk_ids:["T10"] }
+],
+
+gates: [
+{ rule:"Never send without alias allowlist, consent, suppression check, send key, and the one-per-day cap.", why:"SPRINT-75 lists these as never-cut. A public deployment without them is a spam relay.", owner_lane:"Trust" },
+{ rule:"The Flex Count is always labelled satirical and self-reported, next to the real number.", why:"PRODUCT.md principle 2. The board prints five fabricated counts beside real names — the disclosure is what keeps it a joke rather than a claim.", owner_lane:"Comedy" },
+{ rule:"No real email address, send key, or provider payload ever enters git history.", why:"Definition of done on the feature board. A secret scan in CI is the structural version of this promise.", owner_lane:"Platform" },
+{ rule:"Delivery logs record a hashed recipient, never a plaintext address.", why:"DELIVERY-PLAN M3 exit gate.", owner_lane:"Trust" },
+{ rule:"Say the tile number, not the TF number.", why:"All 17 ids shared by the two boards mean different things on each. A bare TF number will send two people at the same file.", owner_lane:"Everyone" }
+],
+
+decisions: [
+{ question:"Which domain and sender name delivers live email?", blocks:["T6","T10"], default_if_unanswered:"Live delivery stays disabled; demo preview remains available." },
+{ question:"Which named recipients have actually agreed to receive this?", blocks:["T6"], default_if_unanswered:"Empty allowlist — nothing sends." },
+{ question:"Should the TKM repository be public or private?", blocks:["T9","T10"], default_if_unanswered:"Private." },
+{ question:"Is Resend the email provider? ADR-010 is still Proposed, not Accepted.", blocks:["T6"], default_if_unanswered:"Stay provider-agnostic behind _lib/delivery." },
+{ question:"Does the shared server scoreboard come back, now that the board is generated?", blocks:[], default_if_unanswered:"It stays obviated. LAST-PLACE.md removes the need for /scores entirely." }
+],
+
+contracts: [
+{ name:"Board shape", between:["T2 Last Place","T3 Flex Lab"], contract:"buildBoard returns rows plus disclosure, streak and three pointers. main.ts renders it and re-renders on name change. Agree the row shape before touching either side." },
+{ name:"Receipt inputs", between:["T1 Flex Engine","T4 Receipt"], contract:"renderMeme takes real tokens, multiplier, flex count and rank. The slogan is fixed copy owned by the receipt, not the engine." },
+{ name:"Send envelope", between:["T5 Comedy","T6 Trust"], contract:"renderDailyEmail returns subject, html and the variant/image ids. The send path adds alias, unsubscribe URL and idempotency — comedy code never touches recipients." },
+{ name:"Denial contract", between:["T6 Trust","T7 Quality"], contract:"Every gate returns before the provider call, with a status and a requestId. Tests assert the provider mock is never invoked." }
+],
+
+reading: [
+{ title:"Claude for Dummies", url:"https://docs.claude.com/en/docs/intro",
+  blurb:"Start here. Genuinely. There is no shame in the intro page, and there is considerable shame in the alternative.",
+  prescribed:"Mike, who has opinions about context windows" },
+{ title:"Claude 101", url:"https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview",
+  blurb:"Prompt engineering, for people who have spent eight months typing “make it better” and then blaming the model.",
+  prescribed:"Nick" },
+{ title:"Who is JSON?", url:"https://www.json.org/json-en.html",
+  blurb:"Not a person. Never was a person. Curly braces, colons, and a firm sense of structure. You have been saying “Jason” in meetings.",
+  prescribed:"G, repeatedly" }
+],
+
+collisions: [
+{id:"TF-001", launch:"Standalone project scaffold", sprint:"GitHub-ready product contract"},
+{id:"TF-002", launch:"Visual system and responsive shell", sprint:"Premium responsive Flex Lab"},
+{id:"TF-003", launch:"Token input and saved presets", sprint:"Tested deterministic Flex Engine"},
+{id:"TF-004", launch:"Deterministic Flex Engine", sprint:"Rotating meme deck and PNG receipt"},
+{id:"TF-005", launch:"Animated reveal sequence", sprint:"Last Place Engine and rigged board"},
+{id:"TF-006", launch:"Original hater-meme base art", sprint:"Dynamic daily email comedy pack"},
+{id:"TF-007", launch:"Browser meme compositor", sprint:"Safe manual + daily delivery"},
+{id:"TF-008", launch:"Download, copy, and native share", sprint:"Adversarial and behavior tests"},
+{id:"TF-009", launch:"Local history, deltas, and streaks", sprint:"UI/accessibility cleanup"},
+{id:"TF-010", launch:"Shared scoreboard API", sprint:"Netlify deploy and smoke check"},
+{id:"TF-101", launch:"OpenAI/Codex usage import", sprint:"Native share sheet"},
+{id:"TF-102", launch:"Anthropic usage import", sprint:"Shared server scoreboard"},
+{id:"TF-103", launch:"Private invite-only leagues", sprint:"Email delivery audit viewer"},
+{id:"TF-201", launch:"Account sign-in", sprint:"OpenAI/Codex usage import"},
+{id:"TF-202", launch:"Reactions and comments", sprint:"Anthropic usage import"},
+{id:"TF-203", launch:"Multi-tenant admin", sprint:"Private leagues"},
+{id:"TF-204", launch:"Paid leagues", sprint:"Account sign-in"}
+]
+};
+
+// Attach the collision detail to each tile from its own refs, so the hazard is visible where the work is.
+DATA.tiles.forEach(t => {
+  const ids = new Set((t.refs || []).map(r => r.split(':')[1]));
+  t.collisions = DATA.collisions.filter(c => ids.has(c.id));
+});
 
 /* ── State ─────────────────────────────────────────────── */
 const LS_KEY = 'tkm-board-v1';
@@ -736,41 +892,28 @@ function renderGates(){
    the challenger is always last. If a challenger out-flexes the
    roster, the roster is "adjusted for competitive integrity".
    ════════════════════════════════════════════════════════ */
-const ROSTER = [
-  {name:'Matty',   tokens:4120000, title:'Context Window Colonizer', streak:31},
-  {name:'Nick',    tokens:3480000, title:'Certified Tokenmaxxer',    streak:24},
-  {name:'Bretton', tokens:2905000, title:'Token Athlete',            streak:19},
-  {name:'G',       tokens:1760000, title:'Context Enjoyer',          streak:12}
-];
-const BURNS = [
-  'Impressive. Still last.',
-  'The Arena has reviewed your submission. You are last.',
-  'Certified fifth. Out of five.',
-  'A personal best, and last.',
-  'Statistically remarkable. Positionally last.',
-  'The scoreboard has considered this and moved you down.',
-  'Everyone clapped. You are still last.',
-  'Numbers like that get you a firm, respectful last.'
-];
-const ROSTER_EXCUSES = [
-  'roster adjusted for competitive integrity',
-  'roster re-weighted after review',
-  'roster normalised against prior form',
-  'roster corrected for altitude'
-];
+const PARTICIPANTS = ['Nick','Matty','Bretton','Mike','G'];
+const DISCLOSURE = 'This scoreboard is anonymous. Participants are identified only by name. ' +
+                   'The five counts above are generated; yours is the only real number here.';
+const TIEBREAKS = ['alphabetical','reverse alphabetical','earlier submission','later submission','coin toss'];
 
-function flexCount(tokens, mult, streakDays){
-  const base = Math.max(tokens, 1);
-  const aura = Math.round(Math.log10(base + 10) * 250000);
-  const streak = streakDays * 100000;
-  return Math.round((base * mult + aura + streak) / 1000) * 1000;
+/* Two seeds, per the spec. Standings come from the date alone, so your number never
+   reshuffles the five. Counts come from your number, so the ladder scales with it. */
+function fnv1a(str){
+  let h = 2166136261 >>> 0;
+  for(let i = 0; i < str.length; i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+  return h >>> 0;
 }
-function rankTitle(actual){
-  if(actual >= 10000000) return 'Context Window Colonizer';
-  if(actual >= 1000000)  return 'Tokenmaxxer';
-  if(actual >= 100000)   return 'Token Athlete';
-  if(actual >= 10000)    return 'Context Enjoyer';
-  return 'Prompt Tourist';
+function mulberry32(a){
+  return function(){
+    a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function dayKey(d){
+  return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2,'0') + '-' + String(d.getUTCDate()).padStart(2,'0');
 }
 function parseTokens(raw){
   const n = parseInt(String(raw).replace(/[^0-9]/g, ''), 10);
@@ -778,50 +921,119 @@ function parseTokens(raw){
   return Math.min(n, 999999999999);
 }
 
+const READING_BANDS = [
+  {max:1000, pool:[
+    ['Claude for Dummies','https://docs.claude.com/en/docs/intro'],
+    ['Touch typing','https://en.wikipedia.org/wiki/Touch_typing'],
+    ['Shopping list','https://en.wikipedia.org/wiki/Shopping_list'],
+    ['How to use a keyboard','https://en.wikipedia.org/wiki/Computer_keyboard']]},
+  {max:100000, pool:[
+    ['Claude for Dummies','https://docs.claude.com/en/docs/intro'],
+    ['Prompt engineering','https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview'],
+    ['What is a language model?','https://en.wikipedia.org/wiki/Language_model'],
+    ['Who is JSON?','https://www.json.org/json-en.html']]},
+  {max:1000000, pool:[
+    ['Participation trophy','https://en.wikipedia.org/wiki/Participation_trophy'],
+    ['How to be more productive','https://en.wikipedia.org/wiki/Productivity'],
+    ['Claude for Dummies','https://docs.claude.com/en/docs/intro'],
+    ['Who is JSON?','https://www.json.org/json-en.html']]},
+  {max:10000000, pool:[
+    ['Sunk cost fallacy','https://en.wikipedia.org/wiki/Sunk_cost'],
+    ['Diminishing returns','https://en.wikipedia.org/wiki/Diminishing_returns'],
+    ['Time management','https://en.wikipedia.org/wiki/Time_management']]},
+  {max:Infinity, pool:[
+    ['Sunk cost fallacy','https://en.wikipedia.org/wiki/Sunk_cost'],
+    ['Going outside','https://en.wikipedia.org/wiki/Outdoor_recreation'],
+    ['Hobby','https://en.wikipedia.org/wiki/Hobby'],
+    ['Diminishing returns','https://en.wikipedia.org/wiki/Diminishing_returns']]}
+];
+function pointersFor(tokens, rng){
+  const band = READING_BANDS.find(b => tokens < b.max) || READING_BANDS[READING_BANDS.length - 1];
+  const pool = band.pool.slice();
+  const out = [];
+  while(out.length < 3 && pool.length) out.push(pool.splice(Math.floor(rng() * pool.length), 1)[0]);
+  return out;
+}
+
+/* Mirrors docs/LAST-PLACE.md. The entrant is position six. Always. */
+function buildBoard(name, tokens, date){
+  const key = dayKey(date);
+  const counts = mulberry32(fnv1a(name + '|' + key + '|' + tokens));
+  const order  = mulberry32(fnv1a('order|' + key));
+
+  const standings = PARTICIPANTS.slice();
+  for(let i = standings.length - 1; i > 0; i--){
+    const j = Math.floor(order() * (i + 1));
+    const tmp = standings[i]; standings[i] = standings[j]; standings[j] = tmp;
+  }
+  // G is never seated below second. This is not explained anywhere.
+  const gi = standings.indexOf('G');
+  if(gi > 1){ const seat = Math.floor(order() * 2); const t = standings[seat]; standings[seat] = 'G'; standings[gi] = t; }
+
+  const tie = counts() < 0.06;
+  const gap = tie ? 0 : Math.max(1, Math.round(Math.pow(counts(), 2.5) * 40));
+
+  const fifth  = tokens + gap;
+  let fourth   = fifth  * (1.04 + counts() * 0.10);
+  let third    = fourth * (1.05 + counts() * 0.12);
+  let second   = third  * (1.15 + counts() * 0.40);
+  let first    = second * (1.80 + counts() * 1.90);
+  if(counts() < 0.08) first *= 3;                       // someone had a day
+
+  const ladder = [first, second, third, fourth].map(Math.round);
+  // The four above fifth are forced strictly apart. Fifth is not — a tie you then lose is funnier.
+  for(let i = 3; i >= 0; i--){
+    const below = i === 3 ? fifth : ladder[i + 1];
+    if(ladder[i] <= below) ladder[i] = below + 1;
+  }
+  const values = ladder.concat([fifth]);
+
+  const rows = standings.map((who, i) => ({name: who, count: values[i], you: false}));
+  rows.push({name: name, count: tokens, you: true});
+
+  const rule = TIEBREAKS[Math.floor(counts() * TIEBREAKS.length)];
+  let line;
+  if(tie) line = 'Tied for fifth. Tiebreak: ' + rule + '. You lose.';
+  else if(gap === 1) line = 'You were one token away.';
+  else if(gap <= 12) line = gap + ' tokens.';
+  else line = 'Last place by ' + fmt(gap) + '.';
+
+  let aside = null;
+  if(name === 'G') aside = 'G is in last place. This has been logged.';
+  else if(PARTICIPANTS.indexOf(name) !== -1) aside = 'There is already a ' + name + ' on this board. This one is last.';
+
+  const streak = 1 + (fnv1a(name + '|streak') % 60);
+  return {rows, line, aside, streak, pointers: pointersFor(tokens, counts), fifthName: standings[4]};
+}
+
 function renderFlexOff(){
   const body = $('#lb-body'); body.textContent = '';
   const you = state.flex;
-  const mult = you ? Number(you.mode) : 100;
 
-  let rows = ROSTER.map(r => ({
-    name: r.name, title: r.title, tokens: r.tokens,
-    score: flexCount(r.tokens, mult, r.streak), you: false
-  }));
-
-  let burn = 'Awaiting a challenger.';
-  let excuse = null;
-
-  if(you){
-    const yourScore = flexCount(you.tokens, mult, 0);
-    const lowest = Math.min.apply(null, rows.map(r => r.score));
-    if(yourScore >= lowest){
-      // The gag: nobody out-flexes the roster. Inflate everyone above the challenger.
-      const gap = Math.max(Math.round(yourScore * 0.045), 250000);
-      rows = rows
-        .sort((a, b) => a.score - b.score)
-        .map((r, i) => Object.assign({}, r, {score: yourScore + gap * (i + 1)}));
-      excuse = ROSTER_EXCUSES[you.tokens % ROSTER_EXCUSES.length];
-    }
-    rows.push({
-      name: you.name || 'Challenger', title: rankTitle(you.tokens),
-      tokens: you.tokens, score: yourScore, you: true
-    });
-    burn = BURNS[you.tokens % BURNS.length];
+  if(!you){
+    const tr = el('tr');
+    const td = el('td', null, 'Type a name and today’s token count. The five above are waiting.');
+    td.colSpan = 4; td.style.color = 'var(--muted)'; td.style.padding = '22px 14px';
+    tr.append(td); body.append(tr);
+    $('#fo-burn').textContent = 'Awaiting a challenger.';
+    $('#fo-fine').textContent = DISCLOSURE;
+    $('#fo-point').textContent = '';
+    return;
   }
 
-  // Everyone but the challenger sorts by score; the challenger is pinned last, always.
-  const others = rows.filter(r => !r.you).sort((a, b) => b.score - a.score);
-  const mine = rows.filter(r => r.you);
-  const final = others.concat(mine);
+  const name = (you.name || '').trim().slice(0, 24) || 'Anonymous';
+  const board = buildBoard(name, you.tokens, new Date());
 
-  final.forEach((r, i) => {
+  board.rows.forEach((r, i) => {
     const tr = el('tr'); if(r.you) tr.className = 'you';
-    tr.append(el('td','rk num', String(i + 1)));
+    tr.append(el('td','rk num', String(i + 1).padStart(2,'0')));
     const who = el('td');
-    who.append(el('span','who', r.name), el('span','title', r.title + (r.you ? ' · challenger' : '')));
+    who.append(el('span','who', r.name));
+    who.append(el('span','title', r.you ? 'you' : 'had a bigger day'));
     tr.append(who);
     const sc = el('td','r');
-    sc.append(el('span','score', fmt(r.score)), el('span','raw', fmt(r.tokens) + ' real tokens'));
+    sc.append(el('span','score', fmt(r.count)));
+    if(!r.you) sc.append(el('span','raw', '+' + fmt(r.count - you.tokens)));
     tr.append(sc);
     const vd = el('td','r');
     vd.append(el('span','pill ' + (r.you ? 's-blocked' : 's-done'), r.you ? 'Last' : 'Above you'));
@@ -829,13 +1041,16 @@ function renderFlexOff(){
     body.append(tr);
   });
 
-  $('#fo-burn').textContent = burn;
-  $('#fo-fine').textContent = you
-    ? `Flex count = base × ${mult} + aura + streak, rounded to 1,000 — the real engine from PRODUCT.md. ` +
-      (excuse ? `Ranking is not: ${excuse}. ` : 'Ranking is not. ') +
-      'Satirical, self-reported, not a measured usage claim.'
-    : 'Flex count uses the real engine from PRODUCT.md — base × multiplier + aura + streak, rounded to 1,000. ' +
-      'Satirical, self-reported, not a measured usage claim.';
+  $('#fo-burn').textContent = board.aside ? board.line + '  //  ' + board.aside : board.line;
+  $('#fo-fine').textContent = 'Consecutive days in last place: ' + board.streak + '. Best finish: last. ' + DISCLOSURE;
+
+  const pt = $('#fo-point'); pt.textContent = '';
+  pt.append(el('span','pt-lab', 'Recommended for you — selected based on your performance: '));
+  board.pointers.forEach((p, i) => {
+    if(i) pt.append(document.createTextNode(' · '));
+    const a = el('a', null, p[0]); a.href = p[1]; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    pt.append(a);
+  });
 }
 
 /* ── Wiring ────────────────────────────────────────────── */
@@ -854,7 +1069,6 @@ function init(){
   if(state.flex){
     $('#fo-name').value = state.flex.name || '';
     $('#fo-tokens').value = fmt(state.flex.tokens);
-    $('#fo-mode').value = String(state.flex.mode);
   }
 
   $('#fo-form').addEventListener('submit', e => {
@@ -865,7 +1079,7 @@ function init(){
       $('#fo-tokens').focus();
       return;
     }
-    state.flex = {name: $('#fo-name').value.trim().slice(0,24), tokens, mode: Number($('#fo-mode').value)};
+    state.flex = {name: $('#fo-name').value.trim().slice(0,24), tokens};
     $('#fo-tokens').value = fmt(tokens);
     save(); renderFlexOff();
   });
