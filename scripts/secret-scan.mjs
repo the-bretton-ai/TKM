@@ -39,10 +39,15 @@ const KEY_SHAPES = [
 const ASSIGNED_SECRET =
   /\b([A-Z0-9_]*(?:SEND_KEY|SIGNING_SECRET|API_KEY|SECRET|PASSWORD|PASSPHRASE|CREDENTIAL)[A-Z0-9_]*)\s*[:=]\s*["'`]?([^\s"'`,;)}\n#]{12,})/g;
 
-/** References, not values. */
+/**
+ * References and self-evident non-secrets. Test fixtures are named as such by
+ * convention — a value spelled `test-provider-key` is a fixture, and flagging it
+ * teaches people to ignore the scanner, which is worse than the finding.
+ */
 const IS_REFERENCE = (v) =>
   /^(process\.env|import\.meta|Deno\.env|\$\{|<|\.\.\.|null|undefined|true|false|\[\]|\{\})/.test(v) ||
-  /^(your-|placeholder|changeme|example|redacted|xxx+|\*+|generate)/i.test(v);
+  /^(your-|placeholder|changeme|example|redacted|xxx+|\*+|generate)/i.test(v) ||
+  /^(test|fake|dummy|mock|stub|sample|invalid|wrong|expired|not-a)[-_]/i.test(v);
 
 function tracked() {
   return execFileSync("git", ["ls-files", "-z"], { encoding: "utf8" })
