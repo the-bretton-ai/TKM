@@ -240,6 +240,11 @@ a { color: inherit; }
 
 @keyframes ticker { to { transform: translateX(-50%); } }
 
+/* An author `display` rule beats the UA stylesheet's [hidden] rule, and
+   .result-panel sets display:flex - so the gated sections leak before submit
+   without this. Keep it above the component rules. */
+[hidden] { display: none !important; }
+
 .shell { padding: 8rem 6vw; }
 
 .flex-lab { background: var(--paper); color: var(--ink); }

@@ -473,7 +473,7 @@ footer b{color:var(--muted); font-weight:600}
    DATA block is generic and does not need to change when tiles change.
    ══════════════════════════════════════════════════════════════════════ */
 const DATA = {
-headline: "Further along than either feature board admits. 39 tests pass across four files, the Last Place Engine and the send path are real, and netlify.toml is written. What is actually missing is CI, a deploy, and a commit for the work sitting in the working tree.",
+headline: "main now holds the whole product — 48 files, 39 tests green, CI running on every PR. The build was parked on a side branch until the merge at 92a8846; before that, main was planning documents only. What is left is polish, honesty fixes on two screens that still print a hard-coded number, and the send-path hardening before a single real email goes out.",
 roster: ["Nick","Matty","Bretton","Mike","G"],
 
 tiles: [
@@ -656,7 +656,7 @@ contracts: [
 ],
 
 reading: [
-{ title:"Claude for Dummies", url:"https://docs.claude.com/en/docs/intro",
+{ title:"Claude for Dummies", url:"https://www.linkedin.com/in/iamalexschwartz/",
   blurb:"Start here. Genuinely. There is no shame in the intro page, and there is considerable shame in the alternative.",
   prescribed:"Mike, who has opinions about context windows" },
 { title:"Claude 101", url:"https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview",
@@ -1021,19 +1021,19 @@ function parseTokens(raw){
 
 const READING_BANDS = [
   {max:1000, pool:[
-    ['Claude for Dummies','https://docs.claude.com/en/docs/intro'],
+    ['Claude for Dummies','https://www.linkedin.com/in/iamalexschwartz/'],
     ['Touch typing','https://en.wikipedia.org/wiki/Touch_typing'],
     ['Shopping list','https://en.wikipedia.org/wiki/Shopping_list'],
     ['How to use a keyboard','https://en.wikipedia.org/wiki/Computer_keyboard']]},
   {max:100000, pool:[
-    ['Claude for Dummies','https://docs.claude.com/en/docs/intro'],
+    ['Claude for Dummies','https://www.linkedin.com/in/iamalexschwartz/'],
     ['Prompt engineering','https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview'],
     ['What is a language model?','https://en.wikipedia.org/wiki/Language_model'],
     ['Who is JSON?','https://www.json.org/json-en.html']]},
   {max:1000000, pool:[
     ['Participation trophy','https://en.wikipedia.org/wiki/Participation_trophy'],
     ['How to be more productive','https://en.wikipedia.org/wiki/Productivity'],
-    ['Claude for Dummies','https://docs.claude.com/en/docs/intro'],
+    ['Claude for Dummies','https://www.linkedin.com/in/iamalexschwartz/'],
     ['Who is JSON?','https://www.json.org/json-en.html']]},
   {max:10000000, pool:[
     ['Sunk cost fallacy','https://en.wikipedia.org/wiki/Sunk_cost'],

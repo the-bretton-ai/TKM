@@ -66,13 +66,13 @@ const READING: Record<
   readonly [Pointer, Pointer, ...Pointer[]]
 > = {
   tiny: [
-    { label: "Claude for Dummies", url: "https://www.google.com/search?q=claude+for+dummies" },
+    { label: "Claude for Dummies", url: "https://www.linkedin.com/in/iamalexschwartz/" },
     { label: "Shopping list", url: "https://en.wikipedia.org/wiki/Shopping_list" },
     { label: "Touch typing", url: "https://en.wikipedia.org/wiki/Touch_typing" },
     { label: "How to use a keyboard", url: "https://www.google.com/search?q=how+to+use+a+keyboard" },
   ],
   small: [
-    { label: "Claude for Dummies", url: "https://www.google.com/search?q=claude+for+dummies" },
+    { label: "Claude for Dummies", url: "https://www.linkedin.com/in/iamalexschwartz/" },
     { label: "Prompt engineering", url: "https://en.wikipedia.org/wiki/Prompt_engineering" },
     { label: "What is a language model?", url: "https://en.wikipedia.org/wiki/Large_language_model" },
     { label: "Getting started with Claude", url: "https://www.google.com/search?q=getting+started+with+claude" },
@@ -80,14 +80,14 @@ const READING: Record<
   middling: [
     { label: "Prompt engineering, for beginners", url: "https://en.wikipedia.org/wiki/Prompt_engineering" },
     { label: "Participation trophy", url: "https://en.wikipedia.org/wiki/Participation_trophy" },
-    { label: "Claude for Dummies", url: "https://www.google.com/search?q=claude+for+dummies" },
+    { label: "Claude for Dummies", url: "https://www.linkedin.com/in/iamalexschwartz/" },
     { label: "How to be more productive", url: "https://www.google.com/search?q=how+to+be+more+productive" },
   ],
   large: [
     { label: "Sunk cost fallacy", url: "https://en.wikipedia.org/wiki/Sunk_cost" },
     { label: "Time management", url: "https://en.wikipedia.org/wiki/Time_management" },
     { label: "Diminishing returns", url: "https://en.wikipedia.org/wiki/Diminishing_returns" },
-    { label: "Claude for Dummies", url: "https://www.google.com/search?q=claude+for+dummies" },
+    { label: "Claude for Dummies", url: "https://www.linkedin.com/in/iamalexschwartz/" },
   ],
   excessive: [
     { label: "Sunk cost fallacy", url: "https://en.wikipedia.org/wiki/Sunk_cost" },
