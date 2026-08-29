@@ -133,7 +133,7 @@
         <p class="board-headline" id="board-headline" role="status"></p>
         <p class="board-note" id="board-note"></p>
 
-        <div class="score-card">
+        <div class="score-card" tabindex="0" role="group" aria-label="Standings table, scrolls horizontally">
           <div class="score-card-head">
             <span>RANK</span><span>FLEXER</span><span>MARGIN</span><span>TOKENS TODAY</span><span>STATUS</span>
           </div>
@@ -168,7 +168,7 @@
               <h3>Today&rsquo;s haul, ranked</h3>
               <p>Every bar is one person&rsquo;s real count. Yours is the short one, in coral.</p>
             </figcaption>
-            <div class="chart-holder" id="chart-haul"></div>
+            <div class="chart-holder" id="chart-haul" tabindex="0" role="img" aria-label="Today's haul, ranked. Every bar is one person's real count; yours is the short one."></div>
           </figure>
 
           <figure class="chart-card">
@@ -176,7 +176,7 @@
               <h3>Finishing position, last 14 days</h3>
               <p>Consistency is a quality. This is a chart of that quality.</p>
             </figcaption>
-            <div class="chart-holder" id="chart-position"></div>
+            <div class="chart-holder" id="chart-position" tabindex="0" role="img" aria-label="Finishing position over the last 14 days."></div>
           </figure>
         </div>
 

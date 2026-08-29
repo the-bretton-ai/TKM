@@ -23,7 +23,6 @@ body {
   background: var(--ink);
   color: var(--white);
   line-height: 1.5;
-  overflow-x: hidden;
 }
 
 button, input, select { font: inherit; }
@@ -32,8 +31,15 @@ button { cursor: pointer; }
 a { color: inherit; }
 
 :focus-visible {
-  outline: 3px solid var(--lime);
-  outline-offset: 4px;
+  /* Two rings in opposite tones. The page has both a near-black ground
+     (--ink) and a near-white one (--paper/--white), plus lime and coral
+     fills, so a single-colour indicator disappears on one of them: lime
+     measured 1.00:1 on the lime button, 1.15:1 on the white inputs and
+     1.11:1 on the paper buttons. The ink outline carries on light grounds,
+     the lime halo carries on ink. */
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px var(--lime);
 }
 
 .skip-link {
@@ -147,9 +153,13 @@ a { color: inherit; }
   letter-spacing: 0.01em;
   line-height: 0.86;
   text-transform: uppercase;
+  /* Impact needs 6.00x font-size for "UNREASONABLY"; the sans-serif fallback
+     used where none of the three faces exist needs 8.35x. Break rather than
+     clip when that fallback is in play. */
+  overflow-wrap: anywhere;
 }
 
-.hero h1 { font-size: clamp(4rem, 5.2vw, 7.25rem); letter-spacing: -.012em; }
+.hero h1 { font-size: clamp(2.5rem, 12vw, 7.25rem); letter-spacing: -.012em; }
 .hero h1 span { color: var(--lime); }
 
 .hero-deck {
@@ -448,8 +458,17 @@ footer { display: flex; align-items: center; justify-content: space-between; gap
 .dialog-actions > button { min-height: 58px; border: 1px solid var(--line-dark); border-radius: 4px; background: transparent; color: var(--white); }
 .dialog-actions .primary-button { margin: 0; justify-content: center; color: var(--ink); border: 0; }
 
+/* Above 1040px the hero splits into two columns, so the display type has to
+   come down to fit the narrower .hero-copy track. Below it the hero is a
+   single column and the base rule applies, which keeps the size monotonic
+   across the 700px breakpoint (it previously dropped 84px -> 64px as the
+   viewport grew). */
+@media (min-width: 1041px) {
+  .hero h1 { font-size: clamp(4rem, 5.2vw, 7.25rem); }
+}
+
 @media (max-width: 1040px) {
-  .hero { grid-template-columns: 1fr; max-height: none; }
+  .hero { grid-template-columns: minmax(0, 1fr); max-height: none; }
   .hero-copy { min-height: 650px; padding: 6rem 6vw; }
   .hero-visual { min-height: 70vw; border-left: 0; border-top: 1px solid var(--line-dark); }
   .lab-grid { grid-template-columns: 1fr; }
@@ -462,7 +481,6 @@ footer { display: flex; align-items: center; justify-content: space-between; gap
   .site-header { min-height: 64px; padding: 0 1rem; }
   .site-header nav a, .status-chip { display: none; }
   .hero-copy { min-height: 580px; padding: 5rem 1.25rem; }
-  .hero h1 { font-size: 12vw; }
   .hero-visual { min-height: 90vw; }
   .broadcast-label { top: 1rem; right: 1rem; }
   .hero-stat { right: 1.25rem; bottom: 1.25rem; }
@@ -539,7 +557,10 @@ footer { display: flex; align-items: center; justify-content: space-between; gap
 
 .chart-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  /* min() lets the track collapse to the container when the viewport is
+     narrower than the 320px floor. A bare minmax(320px, 1fr) overflowed by
+     16px at a 320px viewport, where .shell padding leaves 288px. */
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
   gap: 1.5rem;
 }
 
